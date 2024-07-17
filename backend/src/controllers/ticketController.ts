@@ -1,0 +1,81 @@
+import { Request, Response } from "express";
+import mysql from "mysql2";
+import { Ticket } from "../models/ticketModel";
+import dotenv from "dotenv";
+
+dotenv.config();
+
+// MySQL connection setup
+const connection = mysql.createConnection({
+  host: process.env.DATABASE_URI,
+  port: Number(process.env.DATABASE_PORT),
+  user: process.env.DATABASE_USERNAME,
+  password: process.env.DATABASE_PASSWORD,
+  database: "crm_ticket_system",
+});
+
+// Get all tickets
+export const getTickets = (req: Request, res: Response) => {
+  connection.query(
+    "SELECT * FROM Tickets",
+    (err, results: mysql.RowDataPacket[]) => {
+      if (err) {
+        return res.status(500).json({ error: err.message });
+      }
+      res.json(results);
+    }
+  );
+};
+
+// Get a single ticket by ID
+export const getTicketById = (req: Request, res: Response) => {
+  const { id } = req.params;
+  connection.query(
+    "SELECT * FROM Tickets WHERE id = ?",
+    [id],
+    (err, results: mysql.RowDataPacket[]) => {
+      if (err) {
+        return res.status(500).json({ error: err.message });
+      }
+      res.json(results[0]);
+    }
+  );
+};
+
+// Create a new ticket
+export const createTicket = (req: Request, res: Response) => {
+  const ticket: Ticket = req.body;
+  connection.query(
+    "INSERT INTO Tickets SET ?",
+    ticket,
+    (err, results: mysql.OkPacket) => {
+      if (err) {
+        return res.status(500).json({ error: err.message });
+      }
+      res.status(201).json({ id: results.insertId, ...ticket });
+    }
+  );
+};
+
+// Update a ticket
+export const updateTicket = (req: Request, res: Response) => {
+  const { id } = req.params;
+  const ticket: Ticket = req.body;
+  connection.query("UPDATE Tickets SET ? WHERE id = ?", [ticket, id], (err) => {
+    if (err) {
+      return res.status(500).json({ error: err.message });
+    }
+    res.status(200).json({ id, ...ticket });
+  });
+};
+
+// Delete a ticket
+export const deleteTicket = (req: Request, res: Response) => {
+  const { id } = req.params;
+  connection.query("DELETE FROM Tickets WHERE id = ?", [id], (err) => {
+    if (err) {
+      return res.status(500).json({ error: err.message });
+    }
+    res.status(204).send();
+  });
+};
