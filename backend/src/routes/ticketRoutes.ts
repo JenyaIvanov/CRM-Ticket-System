@@ -6,6 +6,9 @@ import {
   createTicket,
   updateTicket,
   deleteTicket,
+  getOpenTicketsCount,
+  getInProgressTicketsCount,
+  getTotalTicketsCount,
 } from "../controllers/ticketController";
 import { authenticateJWT, authorizeUser } from "../middleware/authMiddleware";
 
@@ -26,5 +29,22 @@ router.delete(
   authorizeUser("admin"),
   deleteTicket
 ); // Apply both authenticateJWT and authorizeUser middlewares
+
+// Additional routes for statistics
+router.get(
+  "/statistics/tickets/open/count",
+  authenticateJWT,
+  getOpenTicketsCount
+);
+router.get(
+  "/statistics/tickets/in-progress/count",
+  authenticateJWT,
+  getInProgressTicketsCount
+);
+router.get(
+  "/statistics/tickets/total/count",
+  authenticateJWT,
+  getTotalTicketsCount
+);
 
 export default router;

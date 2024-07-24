@@ -79,3 +79,37 @@ export const deleteTicket = (req: Request, res: Response) => {
     res.status(204).send();
   });
 };
+
+// Dashboard
+//-- Statistics
+
+export const getOpenTicketsCount = (req: Request, res: Response) => {
+  var sql = "SELECT COUNT(*) as count FROM Tickets WHERE status = 'open'";
+  connection.query(sql, (err, results: mysql.RowDataPacket[]) => {
+    if (err) {
+      return res.status(500).json({ error: err.message });
+    }
+    res.status(200).json({ results });
+  });
+};
+
+export const getInProgressTicketsCount = (req: Request, res: Response) => {
+  var sql =
+    "SELECT COUNT(*) as count FROM Tickets WHERE status = 'in-progress'";
+  connection.query(sql, (err, results: mysql.RowDataPacket[]) => {
+    if (err) {
+      return res.status(500).json({ error: err.message });
+    }
+    res.status(200).json({ results });
+  });
+};
+
+export const getTotalTicketsCount = (req: Request, res: Response) => {
+  var sql = "SELECT COUNT(*) as count FROM Tickets";
+  connection.query(sql, (err, results: mysql.RowDataPacket[]) => {
+    if (err) {
+      return res.status(500).json({ error: err.message });
+    }
+    res.status(200).json({ results });
+  });
+};

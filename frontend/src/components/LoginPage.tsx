@@ -22,7 +22,7 @@ const LoginPage: React.FC = () => {
         const { username, token } = response.data;
         localStorage.setItem("username", username);
         localStorage.setItem("jwt", token); // Store the JWT token in localStorage
-        navigate("/welcome");
+        navigate("/dashboard");
       } else {
         setError("Invalid username or password");
       }
