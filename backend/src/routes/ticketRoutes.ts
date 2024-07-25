@@ -16,7 +16,7 @@ const router = express.Router();
 
 router.get("/tickets", authenticateJWT, getTickets); // Apply authenticateJWT middleware
 router.get("/tickets/:id", authenticateJWT, getTicketById); // Apply authenticateJWT middleware
-router.post("/tickets", authenticateJWT, authorizeUser("admin"), createTicket); // Apply both authenticateJWT and authorizeUser middlewares
+router.post("/tickets", authenticateJWT, createTicket); // Apply both authenticateJWT and authorizeUser middlewares
 router.put(
   "/tickets/:id",
   authenticateJWT,

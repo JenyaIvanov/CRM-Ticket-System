@@ -62,7 +62,7 @@ export const loginUser = (req: Request, res: Response) => {
 
         // Password is correct, generate JWT token
         const token = jwt.sign(
-          { userId: user.id, username: user.username },
+          { userId: user.id, username: user.username, role: user.role },
           process.env.JWT_SECRET!,
           {
             expiresIn: "1h", // Token expires in 1 hour
@@ -70,7 +70,12 @@ export const loginUser = (req: Request, res: Response) => {
         );
 
         // Send token in response
-        res.json({ username: user.username, token });
+        res.json({
+          username: user.username,
+          token,
+          user_id: user.id,
+          role: user.role,
+        });
       });
     }
   );

@@ -60,13 +60,22 @@ export const createTicket = (req: Request, res: Response) => {
 // Update a ticket
 export const updateTicket = (req: Request, res: Response) => {
   const { id } = req.params;
-  const ticket: Ticket = req.body;
-  connection.query("UPDATE Tickets SET ? WHERE id = ?", [ticket, id], (err) => {
-    if (err) {
-      return res.status(500).json({ error: err.message });
+  const { title, description } = req.body;
+
+  const updateFields: any = {};
+  if (title) updateFields.title = title;
+  if (description) updateFields.description = description;
+
+  connection.query(
+    "UPDATE Tickets SET ? WHERE id = ?",
+    [updateFields, id],
+    (err) => {
+      if (err) {
+        return res.status(500).json({ error: err.message });
+      }
+      res.status(200).json({ id, ...updateFields });
     }
-    res.status(200).json({ id, ...ticket });
-  });
+  );
 };
 
 // Delete a ticket
