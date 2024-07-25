@@ -38,8 +38,6 @@ const Dashboard: React.FC = () => {
       if (decoded.exp < currentTime) {
         // Token has expired
         localStorage.removeItem("jwt");
-        localStorage.removeItem("username");
-        localStorage.removeItem("user_id");
         navigate("/login");
       } else {
         // Token is valid
@@ -50,8 +48,6 @@ const Dashboard: React.FC = () => {
     } catch (error) {
       console.error("Error decoding token:", error);
       localStorage.removeItem("jwt");
-      localStorage.removeItem("username");
-      localStorage.removeItem("user_id");
       navigate("/login");
     }
   }, [navigate]);

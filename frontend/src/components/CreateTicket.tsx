@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import apiConfig from "../api/apiConfig";
 import JWT from "expo-jwt";
@@ -17,9 +17,7 @@ const CreateTicket: React.FC = () => {
   const [description, setDescription] = useState("");
   const navigate = useNavigate();
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-
+  useEffect(() => {
     // Retrieve JWT token from localStorage
     const TOKEN_KEY = process.env.REACT_APP_JWT;
     const jwtToken = localStorage.getItem("jwt");
@@ -36,8 +34,6 @@ const CreateTicket: React.FC = () => {
       if (decoded.exp < currentTime) {
         // Token has expired
         localStorage.removeItem("jwt");
-        localStorage.removeItem("username");
-        localStorage.removeItem("user_id");
         navigate("/login");
       } else {
         // Token is valid
@@ -47,10 +43,12 @@ const CreateTicket: React.FC = () => {
     } catch (error) {
       console.error("Error decoding token:", error);
       localStorage.removeItem("jwt");
-      localStorage.removeItem("username");
-      localStorage.removeItem("user_id");
       navigate("/login");
     }
+  }, []);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
 
     const newTicket = {
       title,
@@ -70,6 +68,7 @@ const CreateTicket: React.FC = () => {
 
   return (
     <div>
+      <button onClick={() => navigate("/tickets")}>Return To Tickets</button>
       <h1>Create New Ticket</h1>
       <form onSubmit={handleSubmit}>
         <div>

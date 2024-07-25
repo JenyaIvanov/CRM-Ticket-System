@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import apiConfig from "../api/apiConfig";
-import Cookies from "js-cookie";
 import JWT from "expo-jwt";
 
 interface DecodedToken {
@@ -27,12 +26,14 @@ const TicketDetails: React.FC = () => {
   const [editMode, setEditMode] = useState(false);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
+  const [status, setStatus] = useState("");
   const [userRole, setUserRole] = useState("");
+  const [createdBy, setCreatedBy] = useState("");
+  const [assignedTo, setAssignedTo] = useState("");
 
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Retrieve JWT token from localStorage
     const TOKEN_KEY = process.env.REACT_APP_JWT;
     const jwtToken = localStorage.getItem("jwt");
 
@@ -46,11 +47,9 @@ const TicketDetails: React.FC = () => {
       const currentTime = Date.now() / 1000;
 
       if (decoded.exp < currentTime) {
-        // Token has expired
         localStorage.removeItem("jwt");
         navigate("/login");
       } else {
-        // Token is valid
         setUserRole(decoded.role);
       }
     } catch (error) {
@@ -62,11 +61,21 @@ const TicketDetails: React.FC = () => {
     const fetchTicketDetails = async () => {
       try {
         const response = await apiConfig.get(`/tickets/${ticketId}`);
-        setTicket(response.data);
-        setTitle(response.data.title);
-        setDescription(response.data.description);
+        const ticketData = response.data;
+        setTicket(ticketData);
+        setTitle(ticketData.title);
+        setDescription(ticketData.description);
+        setStatus(ticketData.status);
+
+        const [createdByResponse, assignedToResponse] = await Promise.all([
+          apiConfig.get(`/users/${ticketData.created_by}`),
+          apiConfig.get(`/users/${ticketData.assigned_to}`),
+        ]);
+
+        setCreatedBy(createdByResponse.data.username);
+        setAssignedTo(assignedToResponse.data.username);
       } catch (error) {
-        console.error("Error fetching ticket details:", error);
+        console.error("Error fetching ticket details or users:", error);
       }
     };
 
@@ -75,11 +84,29 @@ const TicketDetails: React.FC = () => {
 
   const handleEdit = async () => {
     try {
-      await apiConfig.put(`/tickets/${ticketId}`, { title, description });
-      setTicket((prev) => (prev ? { ...prev, title, description } : null));
+      await apiConfig.put(`/tickets/${ticketId}`, {
+        title,
+        description,
+        status,
+      });
+      setTicket((prev) =>
+        prev ? { ...prev, title, description, status } : null
+      );
       setEditMode(false);
     } catch (error) {
       console.error("Error updating ticket:", error);
+    }
+  };
+
+  const handleStatusChange = async (newStatus: string) => {
+    try {
+      await apiConfig.put(`/tickets/update-status/${ticketId}`, {
+        status: newStatus,
+      });
+      setTicket((prev) => (prev ? { ...prev, status: newStatus } : null));
+      setStatus(newStatus);
+    } catch (error) {
+      console.error("Error updating status:", error);
     }
   };
 
@@ -96,12 +123,25 @@ const TicketDetails: React.FC = () => {
     navigate("/tickets");
   };
 
+  const handleResolveTicket = async () => {
+    try {
+      await apiConfig.put(`/tickets/update-status/${ticketId}`, {
+        status: "Resolved",
+      });
+      setTicket((prev) => (prev ? { ...prev, status: "Resolved" } : null));
+      setStatus("Resolved");
+    } catch (error) {
+      console.error("Error resolving ticket:", error);
+    }
+  };
+
   if (!ticket) {
     return <div>Loading...</div>;
   }
 
   return (
     <div>
+      <button onClick={handleBackToTickets}>Back to Tickets</button>
       {ticket ? (
         <div>
           {editMode ? (
@@ -115,6 +155,15 @@ const TicketDetails: React.FC = () => {
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
               />
+              <select
+                value={status}
+                onChange={(e) => setStatus(e.target.value)}
+              >
+                <option value="Open">Open</option>
+                <option value="In Progress">In Progress</option>
+                <option value="Resolved">Resolved</option>
+                <option value="Closed">Closed</option>
+              </select>
               <button onClick={handleEdit}>Save</button>
               <button onClick={() => setEditMode(false)}>Cancel</button>
             </div>
@@ -122,11 +171,19 @@ const TicketDetails: React.FC = () => {
             <div>
               <h1>{ticket.title}</h1>
               <p>Status: {ticket.status}</p>
+              <select
+                value={status}
+                onChange={(e) => handleStatusChange(e.target.value)}
+              >
+                <option value="Open">Open</option>
+                <option value="In Progress">In Progress</option>
+                <option value="Resolved">Resolved</option>
+                <option value="Closed">Closed</option>
+              </select>
               <p>
                 Date Created: {new Date(ticket.date_created).toLocaleString()}
               </p>
-              <p>Created By: {ticket.created_by}</p>
-              <p>Assigned To: {ticket.assigned_to}</p>
+              <p>Created By: {createdBy}</p>
               <p>{ticket.description}</p>
               {userRole === "admin" && (
                 <div>
@@ -134,13 +191,17 @@ const TicketDetails: React.FC = () => {
                   <button onClick={handleDelete}>Delete</button>
                 </div>
               )}
+              {ticket.status === "Resolved" ? (
+                ""
+              ) : (
+                <button onClick={handleResolveTicket}>Resolve Ticket</button>
+              )}
             </div>
           )}
         </div>
       ) : (
         <p>Loading...</p>
       )}
-      <button onClick={() => navigate("/tickets")}>Back to Tickets</button>
     </div>
   );
 };

@@ -5,6 +5,7 @@ import {
   getTicketById,
   createTicket,
   updateTicket,
+  updateTicketStatus,
   deleteTicket,
   getOpenTicketsCount,
   getInProgressTicketsCount,
@@ -23,6 +24,7 @@ router.put(
   authorizeUser("admin"),
   updateTicket
 ); // Apply both authenticateJWT and authorizeUser middlewares
+router.put("/tickets/update-status/:id", authenticateJWT, updateTicketStatus); // Apply both authenticateJWT and authorizeUser middlewares
 router.delete(
   "/tickets/:id",
   authenticateJWT,

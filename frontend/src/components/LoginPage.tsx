@@ -19,10 +19,7 @@ const LoginPage: React.FC = () => {
       });
 
       if (response.status === 200) {
-        const { username, user_id, token } = response.data;
-
-        localStorage.setItem("user_id", user_id);
-        localStorage.setItem("username", username);
+        const { token } = response.data;
         localStorage.setItem("jwt", token); // Store the JWT token in localStorage
         navigate("/dashboard");
       } else {
