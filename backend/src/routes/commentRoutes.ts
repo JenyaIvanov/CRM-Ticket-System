@@ -1,7 +1,7 @@
 import express from "express";
 import {
   getComments,
-  getCommentById,
+  getTicketComments,
   getCommentsByTicketId,
   createComment,
   updateComment,
@@ -12,8 +12,8 @@ import { authenticateJWT } from "../middleware/authMiddleware";
 const router = express.Router();
 
 router.get("/comments", authenticateJWT, getComments);
-router.get("/comments/:id", authenticateJWT, getCommentById);
-router.post("/comments", authenticateJWT, createComment);
+router.get("/comments/:id", authenticateJWT, getTicketComments);
+router.post("/comments/:id", authenticateJWT, createComment);
 router.put("/comments/:id", authenticateJWT, updateComment);
 router.delete("/comments/:id", authenticateJWT, deleteComment);
 router.get(

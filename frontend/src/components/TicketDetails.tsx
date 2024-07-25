@@ -20,6 +20,15 @@ interface Ticket {
   description: string;
 }
 
+interface Comment {
+  id: number;
+  ticket_id: number;
+  user_id: number;
+  comment: string;
+  date_created: string;
+  username: string;
+}
+
 const TicketDetails: React.FC = () => {
   const { ticketId } = useParams<{ ticketId: string }>();
   const [ticket, setTicket] = useState<Ticket | null>(null);
@@ -29,7 +38,8 @@ const TicketDetails: React.FC = () => {
   const [status, setStatus] = useState("");
   const [userRole, setUserRole] = useState("");
   const [createdBy, setCreatedBy] = useState("");
-  const [assignedTo, setAssignedTo] = useState("");
+  const [comment, setComment] = useState("");
+  const [comments, setComments] = useState<Comment[]>([]);
 
   const navigate = useNavigate();
 
@@ -67,13 +77,13 @@ const TicketDetails: React.FC = () => {
         setDescription(ticketData.description);
         setStatus(ticketData.status);
 
-        const [createdByResponse, assignedToResponse] = await Promise.all([
+        const [createdByResponse, commentsResponse] = await Promise.all([
           apiConfig.get(`/users/${ticketData.created_by}`),
-          apiConfig.get(`/users/${ticketData.assigned_to}`),
+          apiConfig.get(`/comments/${ticketId}`),
         ]);
 
         setCreatedBy(createdByResponse.data.username);
-        setAssignedTo(assignedToResponse.data.username);
+        setComments(commentsResponse.data);
       } catch (error) {
         console.error("Error fetching ticket details or users:", error);
       }
@@ -132,6 +142,28 @@ const TicketDetails: React.FC = () => {
       setStatus("Resolved");
     } catch (error) {
       console.error("Error resolving ticket:", error);
+    }
+  };
+
+  const handleCommentSubmit = async () => {
+    try {
+      const jwtToken = localStorage.getItem("jwt");
+      if (!jwtToken) return;
+
+      const TOKEN_KEY = process.env.REACT_APP_JWT;
+      const decoded: DecodedToken = JWT.decode(jwtToken!, TOKEN_KEY!);
+
+      await apiConfig.post(`/comments/${ticketId}`, {
+        ticket_id: ticketId,
+        user_id: decoded.userId,
+        comment,
+      });
+
+      setComment(""); // Clear the input box
+      const commentsResponse = await apiConfig.get(`/comments/${ticketId}`);
+      setComments(commentsResponse.data); // Refresh comments
+    } catch (error) {
+      console.error("Error submitting comment:", error);
     }
   };
 
@@ -198,6 +230,30 @@ const TicketDetails: React.FC = () => {
               )}
             </div>
           )}
+          <div>
+            <h2>Comments</h2>
+            <textarea
+              value={comment}
+              onChange={(e) => setComment(e.target.value)}
+              placeholder="Add a comment"
+            />
+            <button onClick={handleCommentSubmit}>Send</button>
+            <div>
+              {Array.isArray(comments) && comments.length > 0 ? (
+                comments.map((comment) => (
+                  <div key={comment.id}>
+                    <p>
+                      <strong>{comment.username}</strong>{" "}
+                      {new Date(comment.date_created).toLocaleString()}
+                    </p>
+                    <p>{comment.comment}</p>
+                  </div>
+                ))
+              ) : (
+                <p>No comments yet.</p>
+              )}
+            </div>
+          </div>
         </div>
       ) : (
         <p>Loading...</p>
