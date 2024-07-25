@@ -9,6 +9,9 @@ import {
 import LoginPage from "./components/LoginPage";
 import RegisterPage from "./components/RegisterPage";
 import Dashboard from "./components/Dashboard";
+import Tickets from "./components/Tickets";
+import TicketDetails from "./components/TicketDetails";
+import CreateTicket from "./components/CreateTicket";
 
 const App: React.FC = () => {
   return (
@@ -17,6 +20,9 @@ const App: React.FC = () => {
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/tickets" element={<Tickets />} />
+        <Route path="/tickets/:ticketId" element={<TicketDetails />} />
+        <Route path="/create-ticket" element={<CreateTicket />} />
         <Route path="/" element={<Navigate to="/login" />} />
       </Routes>
     </Router>

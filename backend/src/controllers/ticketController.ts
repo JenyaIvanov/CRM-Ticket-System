@@ -14,17 +14,24 @@ const connection = mysql.createConnection({
   database: "crm_ticket_system",
 });
 
-// Get all tickets
+// Get all tickets or tickets by status
 export const getTickets = (req: Request, res: Response) => {
-  connection.query(
-    "SELECT * FROM Tickets",
-    (err, results: mysql.RowDataPacket[]) => {
-      if (err) {
-        return res.status(500).json({ error: err.message });
-      }
-      res.json(results);
+  const { status } = req.query;
+  let query = "SELECT * FROM Tickets";
+
+  if (status) {
+    query += " WHERE FIND_IN_SET(status, ?)";
+  }
+
+  query +=
+    " ORDER BY FIELD(status, 'Open', 'In Progress', 'Resolved', 'Closed'), date_created ASC";
+
+  connection.query(query, [status], (err, results: mysql.RowDataPacket[]) => {
+    if (err) {
+      return res.status(500).json({ error: err.message });
     }
-  );
+    res.json(results);
+  });
 };
 
 // Get a single ticket by ID
@@ -60,13 +67,43 @@ export const createTicket = (req: Request, res: Response) => {
 // Update a ticket
 export const updateTicket = (req: Request, res: Response) => {
   const { id } = req.params;
-  const ticket: Ticket = req.body;
-  connection.query("UPDATE Tickets SET ? WHERE id = ?", [ticket, id], (err) => {
-    if (err) {
-      return res.status(500).json({ error: err.message });
+  const { title, description, status } = req.body;
+
+  const updateFields: any = {};
+  if (title) updateFields.title = title;
+  if (description) updateFields.description = description;
+  if (status) updateFields.status = status;
+
+  connection.query(
+    "UPDATE Tickets SET ? WHERE id = ?",
+    [updateFields, id],
+    (err) => {
+      if (err) {
+        return res.status(500).json({ error: err.message });
+      }
+      res.status(200).json({ id, ...updateFields });
     }
-    res.status(200).json({ id, ...ticket });
-  });
+  );
+};
+
+// Update ticket status
+export const updateTicketStatus = (req: Request, res: Response) => {
+  const { id } = req.params;
+  const { status } = req.body;
+
+  const updateFields: any = {};
+  if (status) updateFields.status = status;
+
+  connection.query(
+    "UPDATE Tickets SET ? WHERE id = ?",
+    [updateFields, id],
+    (err) => {
+      if (err) {
+        return res.status(500).json({ error: err.message });
+      }
+      res.status(200).json({ id, ...updateFields });
+    }
+  );
 };
 
 // Delete a ticket
@@ -95,7 +132,7 @@ export const getOpenTicketsCount = (req: Request, res: Response) => {
 
 export const getInProgressTicketsCount = (req: Request, res: Response) => {
   var sql =
-    "SELECT COUNT(*) as count FROM Tickets WHERE status = 'in-progress'";
+    "SELECT COUNT(*) as count FROM Tickets WHERE status = 'in progress'";
   connection.query(sql, (err, results: mysql.RowDataPacket[]) => {
     if (err) {
       return res.status(500).json({ error: err.message });

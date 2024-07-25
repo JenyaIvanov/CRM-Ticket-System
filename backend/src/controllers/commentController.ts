@@ -27,15 +27,23 @@ export const getComments = (req: Request, res: Response) => {
   );
 };
 
-// Get a single comment by ID
-export const getCommentById = (req: Request, res: Response) => {
+// Get comments for a specific ticket by Ticket ID, including the username of the commenter
+export const getTicketComments = (req: Request, res: Response) => {
   const { id } = req.params;
-  var sql = mysql.format("SELECT * FROM Comments WHERE id=?", [id]);
-  connection.query(sql, (err, results: mysql.RowDataPacket[]) => {
+  // SQL query to join Comments with User and select username
+  var sql = `
+    SELECT Comments.id, Comments.ticket_id, Comments.comment, Comments.date_created, Users.username
+    FROM Comments
+    JOIN Users ON Comments.user_id = Users.id
+    WHERE Comments.ticket_id = ?
+    ORDER BY Comments.date_created DESC
+  `;
+
+  connection.query(sql, [id], (err, results: mysql.RowDataPacket[]) => {
     if (err) {
       return res.status(500).json({ error: err.message });
     }
-    res.json(results[0]);
+    res.json(results);
   });
 };
 
@@ -60,13 +68,26 @@ export const getCommentsByTicketId = (req: Request, res: Response) => {
 
 // Create a new comment
 export const createComment = (req: Request, res: Response) => {
-  const comment: Comment = req.body;
-  var sql = mysql.format("INSERT INTO Comments SET ?", [comment]);
+  const { ticket_id, user_id, comment } = req.body;
+  const date_created = new Date();
+
+  var sql = mysql.format("INSERT INTO Comments SET ?", {
+    ticket_id,
+    user_id,
+    comment,
+    date_created,
+  });
   connection.query(sql, (err, results: mysql.OkPacket) => {
     if (err) {
       return res.status(500).json({ error: err.message });
     }
-    res.status(201).json({ id: results.insertId, ...comment });
+    res.status(201).json({
+      id: results.insertId,
+      ticket_id,
+      user_id,
+      comment,
+      date_created,
+    });
   });
 };
 

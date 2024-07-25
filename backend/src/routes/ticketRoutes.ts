@@ -5,6 +5,7 @@ import {
   getTicketById,
   createTicket,
   updateTicket,
+  updateTicketStatus,
   deleteTicket,
   getOpenTicketsCount,
   getInProgressTicketsCount,
@@ -16,13 +17,14 @@ const router = express.Router();
 
 router.get("/tickets", authenticateJWT, getTickets); // Apply authenticateJWT middleware
 router.get("/tickets/:id", authenticateJWT, getTicketById); // Apply authenticateJWT middleware
-router.post("/tickets", authenticateJWT, authorizeUser("admin"), createTicket); // Apply both authenticateJWT and authorizeUser middlewares
+router.post("/tickets", authenticateJWT, createTicket); // Apply both authenticateJWT and authorizeUser middlewares
 router.put(
   "/tickets/:id",
   authenticateJWT,
   authorizeUser("admin"),
   updateTicket
 ); // Apply both authenticateJWT and authorizeUser middlewares
+router.put("/tickets/update-status/:id", authenticateJWT, updateTicketStatus); // Apply both authenticateJWT and authorizeUser middlewares
 router.delete(
   "/tickets/:id",
   authenticateJWT,
