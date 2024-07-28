@@ -7,6 +7,7 @@ interface Ticket {
   id: string;
   title: string;
   status: string;
+  priority: string;
   assigned_to: string;
   created_by: string;
   date_created: string;
@@ -117,6 +118,7 @@ const Tickets: React.FC = () => {
           <button key={ticket.id} onClick={() => handleTicketClick(ticket.id)}>
             <h2>{ticket.title}</h2>
             <p>Status: {ticket.status}</p>
+            <p>Priority: {ticket.priority}</p>
             <p>Created By: {users[ticket.created_by]}</p>
             <p>
               Date Created: {new Date(ticket.date_created).toLocaleDateString()}

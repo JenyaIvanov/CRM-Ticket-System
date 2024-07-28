@@ -6,6 +6,7 @@ import {
   createTicket,
   updateTicket,
   updateTicketStatus,
+  updateTicketPriority,
   deleteTicket,
   getOpenTicketsCount,
   getInProgressTicketsCount,
@@ -25,6 +26,11 @@ router.put(
   updateTicket
 ); // Apply both authenticateJWT and authorizeUser middlewares
 router.put("/tickets/update-status/:id", authenticateJWT, updateTicketStatus); // Apply both authenticateJWT and authorizeUser middlewares
+router.put(
+  "/tickets/update-priority/:id",
+  authenticateJWT,
+  updateTicketPriority
+); // Apply both authenticateJWT and authorizeUser middlewares
 router.delete(
   "/tickets/:id",
   authenticateJWT,

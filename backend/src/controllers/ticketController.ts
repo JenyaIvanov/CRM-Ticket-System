@@ -24,7 +24,7 @@ export const getTickets = (req: Request, res: Response) => {
   }
 
   query +=
-    " ORDER BY FIELD(status, 'Open', 'In Progress', 'Resolved', 'Closed'), date_created ASC";
+    " ORDER BY FIELD(status, 'Open', 'In Progress', 'Resolved', 'Closed'), FIELD(priority, 'Urgent', 'High', 'Medium', 'Low'), date_created ASC";
 
   connection.query(query, [status], (err, results: mysql.RowDataPacket[]) => {
     if (err) {
@@ -93,6 +93,26 @@ export const updateTicketStatus = (req: Request, res: Response) => {
 
   const updateFields: any = {};
   if (status) updateFields.status = status;
+
+  connection.query(
+    "UPDATE Tickets SET ? WHERE id = ?",
+    [updateFields, id],
+    (err) => {
+      if (err) {
+        return res.status(500).json({ error: err.message });
+      }
+      res.status(200).json({ id, ...updateFields });
+    }
+  );
+};
+
+// Update ticket priority
+export const updateTicketPriority = (req: Request, res: Response) => {
+  const { id } = req.params;
+  const { priority } = req.body;
+
+  const updateFields: any = {};
+  if (priority) updateFields.priority = priority;
 
   connection.query(
     "UPDATE Tickets SET ? WHERE id = ?",

@@ -14,6 +14,7 @@ interface Ticket {
   id: string;
   title: string;
   status: string;
+  priority: string;
   date_created: string;
   created_by: string;
   assigned_to: string;
@@ -36,6 +37,7 @@ const TicketDetails: React.FC = () => {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [status, setStatus] = useState("");
+  const [priority, setPriority] = useState("");
   const [userRole, setUserRole] = useState("");
   const [createdBy, setCreatedBy] = useState("");
   const [comment, setComment] = useState("");
@@ -76,6 +78,7 @@ const TicketDetails: React.FC = () => {
         setTitle(ticketData.title);
         setDescription(ticketData.description);
         setStatus(ticketData.status);
+        setPriority(ticketData.priority);
 
         const [createdByResponse, commentsResponse] = await Promise.all([
           apiConfig.get(`/users/${ticketData.created_by}`),
@@ -117,6 +120,18 @@ const TicketDetails: React.FC = () => {
       setStatus(newStatus);
     } catch (error) {
       console.error("Error updating status:", error);
+    }
+  };
+
+  const handlePriorityChange = async (newPriority: string) => {
+    try {
+      await apiConfig.put(`/tickets/update-priority/${ticketId}`, {
+        priority: newPriority,
+      });
+      setTicket((prev) => (prev ? { ...prev, priority: newPriority } : null));
+      setPriority(newPriority);
+    } catch (error) {
+      console.error("Error updating priority:", error);
     }
   };
 
@@ -202,16 +217,31 @@ const TicketDetails: React.FC = () => {
           ) : (
             <div>
               <h1>{ticket.title}</h1>
-              <p>Status: {ticket.status}</p>
-              <select
-                value={status}
-                onChange={(e) => handleStatusChange(e.target.value)}
-              >
-                <option value="Open">Open</option>
-                <option value="In Progress">In Progress</option>
-                <option value="Resolved">Resolved</option>
-                <option value="Closed">Closed</option>
-              </select>
+              <p>
+                Status:{" "}
+                <select
+                  value={status}
+                  onChange={(e) => handleStatusChange(e.target.value)}
+                >
+                  <option value="Open">Open</option>
+                  <option value="In Progress">In Progress</option>
+                  <option value="Resolved">Resolved</option>
+                  <option value="Closed">Closed</option>
+                </select>
+              </p>
+
+              <p>
+                Priority:{" "}
+                <select
+                  value={priority}
+                  onChange={(e) => handlePriorityChange(e.target.value)}
+                >
+                  <option value="Low">Low</option>
+                  <option value="Medium">Medium</option>
+                  <option value="High">High</option>
+                  <option value="Urgent">Urgent</option>
+                </select>
+              </p>
               <p>
                 Date Created: {new Date(ticket.date_created).toLocaleString()}
               </p>
