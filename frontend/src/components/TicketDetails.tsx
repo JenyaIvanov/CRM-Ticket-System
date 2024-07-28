@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import apiConfig from "../api/apiConfig";
 import JWT from "expo-jwt";
+import { saveAs } from "file-saver"; // Add this for saving the file
 
 interface DecodedToken {
   exp: number;
@@ -182,9 +183,52 @@ const TicketDetails: React.FC = () => {
     }
   };
 
-  if (!ticket) {
-    return <div>Loading...</div>;
-  }
+  const convertToCSV = (ticket: Ticket, createdBy: string) => {
+    const csvRows = [];
+    const headers = [
+      "Title",
+      "Status",
+      "Priority",
+      "Created By",
+      "Date",
+      "Time",
+      "Description",
+    ];
+    csvRows.push(headers.join(","));
+
+    const { title, status, priority, date_created, description } = ticket;
+
+    const date = new Date(date_created);
+    const formattedDate = date.toLocaleDateString();
+    const formattedTime = date.toLocaleTimeString();
+
+    const row = [
+      title,
+      status,
+      priority,
+      createdBy,
+      formattedDate,
+      formattedTime,
+      description.replace(/,/g, ";"), // Replace commas to avoid breaking CSV format
+    ].join(",");
+
+    csvRows.push(row);
+
+    return csvRows.join("\n");
+  };
+
+  const handleExportCSV = (ticket: Ticket, createdBy: string) => {
+    const csvContent = convertToCSV(ticket, createdBy);
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.setAttribute("href", url);
+    link.setAttribute("download", `Ticket #${ticket.id} (${ticket.title}).csv`);
+    link.style.visibility = "hidden";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
 
   return (
     <div>
@@ -258,6 +302,9 @@ const TicketDetails: React.FC = () => {
               ) : (
                 <button onClick={handleResolveTicket}>Resolve Ticket</button>
               )}
+              <button onClick={() => handleExportCSV(ticket, createdBy)}>
+                Export to CSV
+              </button>
             </div>
           )}
           <div>
