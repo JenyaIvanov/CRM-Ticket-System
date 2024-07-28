@@ -32,11 +32,23 @@ export const getTicketComments = (req: Request, res: Response) => {
   const { id } = req.params;
   // SQL query to join Comments with User and select username
   var sql = `
-    SELECT Comments.id, Comments.ticket_id, Comments.comment, Comments.date_created, Users.username
-    FROM Comments
-    JOIN Users ON Comments.user_id = Users.id
-    WHERE Comments.ticket_id = ?
-    ORDER BY Comments.date_created DESC
+SELECT 
+    Comments.id, 
+    Comments.ticket_id, 
+    Comments.comment, 
+    Comments.date_created, 
+    Users.username, 
+    Users.profile_picture 
+FROM 
+    Comments 
+JOIN 
+    Users 
+ON 
+    Comments.user_id = Users.id 
+WHERE 
+    Comments.ticket_id = ? 
+ORDER BY 
+    Comments.date_created DESC
   `;
 
   connection.query(sql, [id], (err, results: mysql.RowDataPacket[]) => {

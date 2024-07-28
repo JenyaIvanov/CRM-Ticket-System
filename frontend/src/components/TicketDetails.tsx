@@ -29,6 +29,7 @@ interface Comment {
   comment: string;
   date_created: string;
   username: string;
+  profile_picture: string;
 }
 
 const TicketDetails: React.FC = () => {
@@ -319,10 +320,17 @@ const TicketDetails: React.FC = () => {
               {Array.isArray(comments) && comments.length > 0 ? (
                 comments.map((comment) => (
                   <div key={comment.id}>
-                    <p>
-                      <strong>{comment.username}</strong>{" "}
-                      {new Date(comment.date_created).toLocaleString()}
-                    </p>
+                    <div>
+                      <img
+                        src={"http://localhost:3000/" + comment.profile_picture}
+                        alt="Profile"
+                        width="20"
+                      />
+                      <p>
+                        <strong>{comment.username}</strong>{" "}
+                        {new Date(comment.date_created).toLocaleString()}
+                      </p>
+                    </div>
                     <p>{comment.comment}</p>
                   </div>
                 ))

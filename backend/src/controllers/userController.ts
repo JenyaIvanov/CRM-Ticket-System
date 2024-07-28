@@ -1,11 +1,11 @@
-// userController.ts
-
 import { Request, Response } from "express";
 import mysql from "mysql2";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
 import { User } from "../models/userModel"; // Make sure to import User interface from userModel.ts
 import dotenv from "dotenv";
+import path from "path";
+import fs from "fs";
 
 dotenv.config();
 
@@ -67,6 +67,7 @@ export const loginUser = (req: Request, res: Response) => {
             username: user.username,
             role: user.role,
             email: user.email,
+            profile_picture: user.profile_picture,
           },
           process.env.JWT_SECRET!,
           {
@@ -81,6 +82,7 @@ export const loginUser = (req: Request, res: Response) => {
           user_id: user.id,
           role: user.role,
           email: user.email,
+          profile_picture: user.profile_picture,
         });
       });
     }
@@ -135,7 +137,13 @@ export const createUser = (req: Request, res: Response) => {
       return res.status(500).json({ error: "Failed to hash password" });
     }
 
-    const newUser: User = { username, password: hashedPassword, email, role };
+    const newUser: User = {
+      username,
+      password: hashedPassword,
+      email,
+      role,
+      profile_picture: "user-data/images/default-profile.png",
+    };
 
     connection.query(
       "INSERT INTO Users SET ?",
@@ -151,13 +159,18 @@ export const createUser = (req: Request, res: Response) => {
   });
 };
 
-// Update user profile
 export const updateUserProfile = (req: Request, res: Response) => {
   const userId = req.params.id;
   const { username, email, password } = req.body;
 
+  let profilePicture = req.body.profilePicture; // Default to the existing profile picture URL
+
+  if (req.file) {
+    profilePicture = `user-data/images/${req.file.filename}`;
+  }
+
   // Validate request body
-  if (!username && !email && !password) {
+  if (!username && !email && !password && !req.file) {
     return res
       .status(400)
       .json({ message: "At least one field must be filled out" });
@@ -193,7 +206,12 @@ export const updateUserProfile = (req: Request, res: Response) => {
           return res.status(500).json({ error: "Failed to hash password" });
         }
 
-        const updatedUser: any = { username, email, password: hashedPassword };
+        const updatedUser: any = {
+          username,
+          email,
+          password: hashedPassword,
+          profile_picture: profilePicture,
+        };
         if (!username) delete updatedUser.username;
         if (!email) delete updatedUser.email;
 
@@ -204,12 +222,16 @@ export const updateUserProfile = (req: Request, res: Response) => {
             if (err) {
               return res.status(500).json({ error: err.message });
             }
-            res.json({ message: "Profile updated successfully" });
+            generateNewToken(userId);
           }
         );
       });
     } else {
-      const updatedUser: any = { username, email };
+      const updatedUser: any = {
+        username,
+        email,
+        profile_picture: profilePicture,
+      };
       if (!username) delete updatedUser.username;
       if (!email) delete updatedUser.email;
 
@@ -220,10 +242,53 @@ export const updateUserProfile = (req: Request, res: Response) => {
           if (err) {
             return res.status(500).json({ error: err.message });
           }
-          res.json({ message: "Profile updated successfully" });
+          generateNewToken(userId);
         }
       );
     }
+  }
+
+  function generateNewToken(userId: string) {
+    connection.query(
+      "SELECT * FROM Users WHERE id = ?",
+      [userId],
+      (err, results: any[]) => {
+        if (err) {
+          return res.status(500).json({ error: err.message });
+        }
+
+        if (results.length === 0) {
+          return res.status(404).json({ message: "User not found" });
+        }
+
+        const user = results[0];
+
+        // Generate new JWT token with updated user information
+        const token = jwt.sign(
+          {
+            userId: user.id,
+            username: user.username,
+            role: user.role,
+            email: user.email,
+            profile_picture: user.profile_picture,
+          },
+          process.env.JWT_SECRET!,
+          {
+            expiresIn: "1h", // Token expires in 1 hour
+          }
+        );
+
+        // Send the new token and user information in response
+        res.json({
+          username: user.username,
+          token,
+          user_id: user.id,
+          role: user.role,
+          email: user.email,
+          profile_picture: user.profile_picture,
+        });
+      }
+    );
   }
 };
 
@@ -235,5 +300,25 @@ export const deleteUser = (req: Request, res: Response) => {
       return res.status(500).json({ error: err.message });
     }
     res.status(204).send();
+  });
+};
+
+// Handle profile picture upload
+export const uploadProfilePicture = (req: Request, res: Response) => {
+  if (!req.file) {
+    return res.status(400).json({ message: "No file uploaded" });
+  }
+
+  const imagePath = path.join(
+    __dirname,
+    "../../public/user-data/images",
+    req.file.filename
+  );
+
+  fs.writeFile(imagePath, req.file.buffer, (err) => {
+    if (err) {
+      return res.status(500).json({ error: "Failed to save image" });
+    }
+    res.json({ message: "Profile picture uploaded successfully" });
   });
 };
