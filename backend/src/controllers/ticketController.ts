@@ -14,19 +14,23 @@ const connection = mysql.createConnection({
   database: "crm_ticket_system",
 });
 
-// Get all tickets or tickets by status
 export const getTickets = (req: Request, res: Response) => {
-  const { status } = req.query;
+  const { status, search } = req.query;
   let query = "SELECT * FROM Tickets";
+  let params: any[] = [];
 
-  if (status) {
+  if (search) {
+    query += " WHERE title LIKE ?";
+    params.push(`%${search}%`);
+  } else if (status) {
     query += " WHERE FIND_IN_SET(status, ?)";
+    params.push(status);
   }
 
   query +=
     " ORDER BY FIELD(status, 'Open', 'In Progress', 'Resolved', 'Closed'), FIELD(priority, 'Urgent', 'High', 'Medium', 'Low'), date_created ASC";
 
-  connection.query(query, [status], (err, results: mysql.RowDataPacket[]) => {
+  connection.query(query, params, (err, results: mysql.RowDataPacket[]) => {
     if (err) {
       return res.status(500).json({ error: err.message });
     }

@@ -20,15 +20,11 @@ interface DecodedToken {
   [key: string]: any;
 }
 
-interface User {
-  id: string;
-  username: string;
-}
-
 const Tickets: React.FC = () => {
   const [tickets, setTickets] = useState<Ticket[]>([]);
   const [users, setUsers] = useState<{ [key: string]: string }>({});
   const [filter, setFilter] = useState<string>("Open,In Progress"); // Default filter
+  const [searchQuery, setSearchQuery] = useState<string>("");
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -47,8 +43,6 @@ const Tickets: React.FC = () => {
       if (decoded.exp < currentTime) {
         localStorage.removeItem("jwt");
         navigate("/login");
-      } else {
-        // Valid Token
       }
     } catch (error) {
       console.error("Error decoding token:", error);
@@ -59,14 +53,15 @@ const Tickets: React.FC = () => {
     const fetchTickets = async () => {
       try {
         let url = "/tickets";
-        if (filter) {
+        if (searchQuery) {
+          url += `?search=${searchQuery}`;
+        } else if (filter) {
           url += `?status=${filter}`;
         }
 
         const response = await apiConfig.get(url);
         setTickets(response.data);
 
-        // Fetch user details for created_by and assigned_to fields
         const userIds = Array.from(
           new Set(
             response.data.flatMap((ticket: Ticket) => [
@@ -89,7 +84,7 @@ const Tickets: React.FC = () => {
     };
 
     fetchTickets();
-  }, [filter, navigate]);
+  }, [filter, searchQuery, navigate]);
 
   const handleTicketClick = (ticketId: string) => {
     navigate(`/tickets/${ticketId}`);
@@ -104,6 +99,12 @@ const Tickets: React.FC = () => {
       <h1>All Tickets</h1>
       <button onClick={handleCreateTicket}>Create New Ticket</button>
       <div>
+        <input
+          type="text"
+          placeholder="Search by title..."
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+        />
         <button onClick={() => setFilter("Open,In Progress")}>
           Open Tickets
         </button>
