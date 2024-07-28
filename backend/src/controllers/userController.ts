@@ -62,7 +62,12 @@ export const loginUser = (req: Request, res: Response) => {
 
         // Password is correct, generate JWT token
         const token = jwt.sign(
-          { userId: user.id, username: user.username, role: user.role },
+          {
+            userId: user.id,
+            username: user.username,
+            role: user.role,
+            email: user.email,
+          },
           process.env.JWT_SECRET!,
           {
             expiresIn: "1h", // Token expires in 1 hour
@@ -75,6 +80,7 @@ export const loginUser = (req: Request, res: Response) => {
           token,
           user_id: user.id,
           role: user.role,
+          email: user.email,
         });
       });
     }
@@ -145,37 +151,80 @@ export const createUser = (req: Request, res: Response) => {
   });
 };
 
-// Update a user
-export const updateUser = (req: Request, res: Response) => {
-  const { id } = req.params;
-  const { username, password, email, role } = req.body;
+// Update user profile
+export const updateUserProfile = (req: Request, res: Response) => {
+  const userId = req.params.id;
+  const { username, email, password } = req.body;
 
   // Validate request body
-  if (!username || !password || !email || !role) {
+  if (!username && !email && !password) {
     return res
       .status(400)
-      .json({ message: "Username, password, email, and role are required" });
+      .json({ message: "At least one field must be filled out" });
   }
 
-  // Hash password
-  bcrypt.hash(password, 10, (err, hashedPassword) => {
-    if (err) {
-      return res.status(500).json({ error: "Failed to hash password" });
-    }
-
-    const updatedUser = { username, password: hashedPassword, email, role };
-
+  // Check if username already exists
+  if (username) {
     connection.query(
-      "UPDATE Users SET ? WHERE id = ?",
-      [updatedUser, id],
-      (err) => {
+      "SELECT * FROM Users WHERE username = ? AND id != ?",
+      [username, userId],
+      (err, results) => {
         if (err) {
-          return res.status(500).json({ error: err.message });
+          return res.status(500).json({ error: "Database error" });
         }
-        res.status(200).json({ id, ...updatedUser });
+        const userResults = results as mysql.RowDataPacket[];
+        if (userResults.length > 0) {
+          return res.status(400).json({ message: "Username already taken" });
+        }
+
+        // Proceed with updating the user
+        updateUser();
       }
     );
-  });
+  } else {
+    updateUser();
+  }
+
+  function updateUser() {
+    // Hash password if provided
+    if (password) {
+      bcrypt.hash(password, 10, (err, hashedPassword) => {
+        if (err) {
+          return res.status(500).json({ error: "Failed to hash password" });
+        }
+
+        const updatedUser: any = { username, email, password: hashedPassword };
+        if (!username) delete updatedUser.username;
+        if (!email) delete updatedUser.email;
+
+        connection.query(
+          "UPDATE Users SET ? WHERE id = ?",
+          [updatedUser, userId],
+          (err) => {
+            if (err) {
+              return res.status(500).json({ error: err.message });
+            }
+            res.json({ message: "Profile updated successfully" });
+          }
+        );
+      });
+    } else {
+      const updatedUser: any = { username, email };
+      if (!username) delete updatedUser.username;
+      if (!email) delete updatedUser.email;
+
+      connection.query(
+        "UPDATE Users SET ? WHERE id = ?",
+        [updatedUser, userId],
+        (err) => {
+          if (err) {
+            return res.status(500).json({ error: err.message });
+          }
+          res.json({ message: "Profile updated successfully" });
+        }
+      );
+    }
+  }
 };
 
 // Delete a user

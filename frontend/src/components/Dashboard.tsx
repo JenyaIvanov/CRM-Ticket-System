@@ -12,7 +12,7 @@ interface DecodedToken {
 
 const Dashboard: React.FC = () => {
   const [username, setUsername] = useState("");
-  const [user_id, setUserId] = useState(0);
+  const [userId, setUserId] = useState(0);
   const [openTickets, setOpenTickets] = useState(0);
   const [inProgressTickets, setInProgressTickets] = useState(0);
   const [totalTickets, setTotalTickets] = useState(0);
@@ -42,7 +42,7 @@ const Dashboard: React.FC = () => {
       } else {
         // Token is valid
         setUserId(decoded.userId);
-        setUsername(decoded.username);
+        fetchUserInfo(decoded.userId);
         fetchStatistics();
       }
     } catch (error) {
@@ -51,6 +51,16 @@ const Dashboard: React.FC = () => {
       navigate("/login");
     }
   }, [navigate]);
+
+  const fetchUserInfo = async (userId: number) => {
+    try {
+      const response = await apiConfig.get(`/users/${userId}`);
+      const user = response.data;
+      setUsername(user.username);
+    } catch (error) {
+      console.error("Error fetching user info:", error);
+    }
+  };
 
   const fetchStatistics = async () => {
     try {

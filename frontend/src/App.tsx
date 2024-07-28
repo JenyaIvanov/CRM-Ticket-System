@@ -12,6 +12,7 @@ import Dashboard from "./components/Dashboard";
 import Tickets from "./components/Tickets";
 import TicketDetails from "./components/TicketDetails";
 import CreateTicket from "./components/CreateTicket";
+import Profile from "./components/Profile";
 
 const App: React.FC = () => {
   return (
@@ -23,6 +24,7 @@ const App: React.FC = () => {
         <Route path="/tickets" element={<Tickets />} />
         <Route path="/tickets/:ticketId" element={<TicketDetails />} />
         <Route path="/create-ticket" element={<CreateTicket />} />
+        <Route path="/profile" element={<Profile />} />
         <Route path="/" element={<Navigate to="/login" />} />
       </Routes>
     </Router>
