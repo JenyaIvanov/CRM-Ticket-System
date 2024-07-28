@@ -210,7 +210,7 @@ const TicketDetails: React.FC = () => {
       createdBy,
       formattedDate,
       formattedTime,
-      description.replace(/,/g, ";"), // Replace commas to avoid breaking CSV format
+      `"${description.replace(/"/g, '""')}"`,
     ].join(",");
 
     csvRows.push(row);
