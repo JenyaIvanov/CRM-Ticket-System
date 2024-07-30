@@ -159,6 +159,39 @@ export const createUser = (req: Request, res: Response) => {
   });
 };
 
+// Admin update user profile
+export const adminUpdateUserProfile = (req: Request, res: Response) => {
+  const { id } = req.params;
+  const { role, profile_picture } = req.body;
+
+  // Check if the user exists
+  connection.query(
+    "SELECT * FROM Users WHERE id = ?",
+    [id],
+    (err, results: mysql.RowDataPacket[]) => {
+      if (err) {
+        return res.status(500).json({ error: err.message });
+      }
+      if (results.length === 0) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      // Update user profile
+      const updateFields: any = {};
+      if (role) updateFields.role = role;
+      if (profile_picture) updateFields.profile_picture = profile_picture;
+
+      const updateQuery = "UPDATE Users SET ? WHERE id = ?";
+      connection.query(updateQuery, [updateFields, id], (err, results) => {
+        if (err) {
+          return res.status(500).json({ error: err.message });
+        }
+        res.json({ message: "User updated successfully" });
+      });
+    }
+  );
+};
+
 export const updateUserProfile = (req: Request, res: Response) => {
   const userId = req.params.id;
   const { username, email, password } = req.body;

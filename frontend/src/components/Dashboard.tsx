@@ -50,6 +50,7 @@ const Dashboard: React.FC = () => {
 
   // Function to handle personal details and personal statistics.
   const fetchUserInfo = async (userId: number) => {
+    if (userId === 0) return;
     try {
       const response = await apiConfig.get(`/users/${userId}`);
       const user = response.data;

@@ -15,6 +15,7 @@ import TicketDetails from "./components/TicketDetails";
 import CreateTicket from "./components/CreateTicket";
 import Profile from "./components/Profile";
 import Navbar from "./components/Navbar";
+import UserManagement from "./components/UserManagement";
 
 const App: React.FC = () => {
   return (
@@ -45,6 +46,7 @@ const MainLayout: React.FC = () => {
           <Route path="/tickets/:ticketId" element={<TicketDetails />} />
           <Route path="/create-ticket" element={<CreateTicket />} />
           <Route path="/profile" element={<Profile />} />
+          <Route path="/user-management/" element={<UserManagement />} />
           <Route path="/" element={<Navigate to="/login" />} />
         </Routes>
       </div>
