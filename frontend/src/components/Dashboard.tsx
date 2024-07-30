@@ -1,14 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import JWT from "expo-jwt";
+import { DecodedToken } from "../interfaces/DecodedToken";
 import apiConfig from "../api/apiConfig";
-
-interface DecodedToken {
-  exp: number;
-  username: string;
-  userId: number;
-  [key: string]: any;
-}
 
 const Dashboard: React.FC = () => {
   const [username, setUsername] = useState("");
@@ -23,6 +17,7 @@ const Dashboard: React.FC = () => {
   };
 
   useEffect(() => {
+    // Retrieve JWT token from localStorage
     const TOKEN_KEY = process.env.REACT_APP_JWT;
     const jwtToken = localStorage.getItem("jwt");
 
@@ -32,6 +27,7 @@ const Dashboard: React.FC = () => {
     }
 
     try {
+      // Decode the Token to check if its valid.
       const decoded: DecodedToken = JWT.decode(jwtToken!, TOKEN_KEY!);
       const currentTime = Date.now() / 1000;
 
@@ -42,7 +38,7 @@ const Dashboard: React.FC = () => {
       } else {
         // Token is valid
         setUserId(decoded.userId);
-        fetchUserInfo(decoded.userId);
+        fetchUserInfo(userId);
         fetchStatistics();
       }
     } catch (error) {
@@ -50,8 +46,9 @@ const Dashboard: React.FC = () => {
       localStorage.removeItem("jwt");
       navigate("/login");
     }
-  }, [navigate]);
+  }, [navigate, userId]);
 
+  // Function to handle personal details and personal statistics.
   const fetchUserInfo = async (userId: number) => {
     try {
       const response = await apiConfig.get(`/users/${userId}`);
@@ -62,6 +59,7 @@ const Dashboard: React.FC = () => {
     }
   };
 
+  // Function to handle fetiching Ticket and System statistics from the backend.
   const fetchStatistics = async () => {
     try {
       const openTicketsResponse = await apiConfig.get(

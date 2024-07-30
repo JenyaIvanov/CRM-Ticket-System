@@ -2,23 +2,8 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import apiConfig from "../api/apiConfig";
 import JWT from "expo-jwt";
-
-interface Ticket {
-  id: string;
-  title: string;
-  status: string;
-  priority: string;
-  assigned_to: string;
-  created_by: string;
-  date_created: string;
-}
-
-interface DecodedToken {
-  exp: number;
-  username: string;
-  userId: number;
-  [key: string]: any;
-}
+import { DecodedToken } from "../interfaces/DecodedToken";
+import { Ticket } from "../interfaces/Ticket";
 
 const Tickets: React.FC = () => {
   const [tickets, setTickets] = useState<Ticket[]>([]);
@@ -28,6 +13,7 @@ const Tickets: React.FC = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
+    // Retrieve JWT token from localStorage
     const TOKEN_KEY = process.env.REACT_APP_JWT;
     const jwtToken = localStorage.getItem("jwt");
 
@@ -37,6 +23,7 @@ const Tickets: React.FC = () => {
     }
 
     try {
+      // Decode the Token to check if its valid.
       const decoded: DecodedToken = JWT.decode(jwtToken!, TOKEN_KEY!);
       const currentTime = Date.now() / 1000;
 
@@ -50,6 +37,7 @@ const Tickets: React.FC = () => {
       navigate("/login");
     }
 
+    // Function handles fetching all the tickets based on the selected filter.
     const fetchTickets = async () => {
       try {
         let url = "/tickets";
@@ -96,15 +84,23 @@ const Tickets: React.FC = () => {
 
   return (
     <div>
+      {/* Tickets */}
       <h1>All Tickets</h1>
+
+      {/* Create A New Ticket */}
       <button onClick={handleCreateTicket}>Create New Ticket</button>
+
+      {/* Filters & Search */}
       <div>
+        {/* Search Box */}
         <input
           type="text"
           placeholder="Search by title..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
         />
+
+        {/* Filters */}
         <button onClick={() => setFilter("Open,In Progress")}>
           Open Tickets
         </button>
@@ -114,6 +110,8 @@ const Tickets: React.FC = () => {
           All Tickets
         </button>
       </div>
+
+      {/* Query Tickets From Database */}
       <div>
         {tickets.map((ticket) => (
           <button key={ticket.id} onClick={() => handleTicketClick(ticket.id)}>

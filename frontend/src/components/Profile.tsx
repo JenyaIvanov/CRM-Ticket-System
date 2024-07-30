@@ -1,16 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import apiConfig from "../api/apiConfig";
+import { DecodedToken } from "../interfaces/DecodedToken";
 import JWT from "expo-jwt";
-
-interface DecodedToken {
-  exp: number;
-  username: string;
-  userId: number;
-  email: string;
-  profile_picture: string;
-  [key: string]: any;
-}
 
 const Profile: React.FC = () => {
   const [username, setUsername] = useState("");
@@ -25,6 +17,7 @@ const Profile: React.FC = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
+    // Retrieve JWT token from localStorage
     const TOKEN_KEY = process.env.REACT_APP_JWT;
     const jwtToken = localStorage.getItem("jwt");
 
@@ -34,15 +27,24 @@ const Profile: React.FC = () => {
     }
 
     try {
+      // Decode the Token to check if its valid.
       const decoded: DecodedToken = JWT.decode(jwtToken!, TOKEN_KEY!);
-      setUsername(decoded.username);
-      setEmail(decoded.email);
-      console.log(decoded);
-      setProfilePicture(
-        decoded.profile_picture
-          ? `http://localhost:3000/${decoded.profile_picture}`
-          : "http://localhost:3000/user-data/images/default-profile.png"
-      );
+      const currentTime = Date.now() / 1000;
+
+      if (decoded.exp < currentTime) {
+        // Token has expired
+        localStorage.removeItem("jwt");
+        navigate("/login");
+      } else {
+        // Token is valid
+        setUsername(decoded.username);
+        setEmail(decoded.email);
+        setProfilePicture(
+          decoded.profile_picture
+            ? `http://localhost:3000/${decoded.profile_picture}`
+            : "http://localhost:3000/user-data/images/default-profile.png"
+        );
+      }
     } catch (error) {
       console.error("Error decoding token:", error);
       localStorage.removeItem("jwt");
@@ -50,8 +52,11 @@ const Profile: React.FC = () => {
     }
   }, [navigate]);
 
+  // Function to handle profile changes submit.
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    // Password match checker.
     if (password !== repeatPassword) {
       setError("Passwords do not match");
       return;
@@ -60,13 +65,18 @@ const Profile: React.FC = () => {
     const formData = new FormData();
     formData.append("username", username.trim());
     formData.append("email", email.trim());
+
+    // Password changed?
     if (password) {
       formData.append("password", password.trim());
     }
+
+    // New profile picture?
     if (newProfilePicture) {
       formData.append("profilePicture", newProfilePicture);
     }
 
+    // Nothing changed.
     if (!username && !email && !password && !newProfilePicture) {
       setError("At least one field must be filled out");
       return;
