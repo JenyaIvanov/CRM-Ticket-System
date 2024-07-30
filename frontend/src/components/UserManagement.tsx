@@ -109,42 +109,32 @@ const UserManagement: React.FC = () => {
     }
   };
 
-  const handleDeleteUser = async (userId: number, username: string) => {
-    if (
-      window.confirm(
-        `Are you sure you want to delete User ${userId} (${username})?`
-      )
-    ) {
-      try {
-        await apiConfig.delete(`/users/${userId}`);
-        setUsers(users.filter((user) => user.id !== userId));
-      } catch (error) {
-        console.error("Error deleting user:", error);
-      }
-    }
-  };
-
   return (
     <div>
+      {/* User Management View */}
       <h1>User Management</h1>
+
+      {/* Users List */}
       {users.map((user) => (
         <div key={user.id} className="user-card">
+          {/* User */}
+
           <img
             src={"http://localhost:3000/" + user.profile_picture}
             alt="Profile"
             width="50"
             height="50"
           />
+
           <span>
             {user.username} - {user.email} - {user.role}
           </span>
+
           <button onClick={() => openModal(user.id)}>View Details</button>
-          <button onClick={() => handleDeleteUser(user.id, user.username)}>
-            Delete User
-          </button>
         </div>
       ))}
 
+      {/* User Edit Modal */}
       {selectedUser && (
         <Modal
           isOpen={modalIsOpen}
@@ -152,14 +142,24 @@ const UserManagement: React.FC = () => {
           onRequestClose={closeModal}
         >
           <h2>User Details</h2>
+
+          {/* User: Profile Pictrue */}
+          <p>Profile Picture</p>
           <img
             src={"http://localhost:3000/" + selectedUser.profile_picture}
             alt="Profile"
             width="100"
             height="100"
           />
+          <button onClick={handleResetProfilePicture}>
+            Reset Picture To Default
+          </button>
+
+          {/* User: Profile Details */}
           <p>Username: {selectedUser.username}</p>
           <p>Email: {selectedUser.email}</p>
+
+          {/* User: Change Role */}
           <p>
             Role:
             <select value={newRole} onChange={handleRoleChange}>
@@ -167,7 +167,8 @@ const UserManagement: React.FC = () => {
               <option value="admin">Admin</option>
             </select>
           </p>
-          <button onClick={handleResetProfilePicture}>Reset To Default</button>
+
+          {/* User: Submit Changes Role */}
           <button onClick={handleUpdateProfile}>Update Profile</button>
           <button onClick={closeModal}>Close</button>
         </Modal>

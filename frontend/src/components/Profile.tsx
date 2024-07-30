@@ -143,6 +143,8 @@ const Profile: React.FC = () => {
           <input
             type="password"
             value={password}
+            name="password"
+            autoComplete="on"
             onChange={(e) => setPassword(e.target.value)}
           />
         </div>
@@ -150,6 +152,8 @@ const Profile: React.FC = () => {
           <label>Repeat Password:</label>
           <input
             type="password"
+            name="repeatPassword"
+            autoComplete="on"
             value={repeatPassword}
             onChange={(e) => setRepeatPassword(e.target.value)}
           />
