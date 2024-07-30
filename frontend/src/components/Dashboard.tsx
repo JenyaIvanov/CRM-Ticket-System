@@ -10,6 +10,7 @@ const Dashboard: React.FC = () => {
   const [openTickets, setOpenTickets] = useState(0);
   const [inProgressTickets, setInProgressTickets] = useState(0);
   const [totalTickets, setTotalTickets] = useState(0);
+  const [totalUrgentTickets, setTotalUrgentTickets] = useState(0);
   const navigate = useNavigate();
 
   const handleViewTickets = () => {
@@ -72,10 +73,14 @@ const Dashboard: React.FC = () => {
       const totalTicketsResponse = await apiConfig.get(
         "/statistics/tickets/total/count"
       );
+      const totalUrgentTicketsResponse = await apiConfig.get(
+        "/statistics/tickets/total-urgent/count"
+      );
 
       setOpenTickets(openTicketsResponse.data.results[0].count);
       setInProgressTickets(inProgressTicketsResponse.data.results[0].count);
       setTotalTickets(totalTicketsResponse.data.results[0].count);
+      setTotalUrgentTickets(totalUrgentTicketsResponse.data.results[0].count);
     } catch (error) {
       console.error("Error fetching statistics:", error);
     }
@@ -84,9 +89,11 @@ const Dashboard: React.FC = () => {
   return (
     <div>
       <h1>Welcome {username} to the system!</h1>
-      <p>Open Tickets: {openTickets}</p>
+      <p>Total Open Tickets: {openTickets + inProgressTickets}</p>
+      <p>New Tickets: {openTickets}</p>
       <p>Tickets In Progress: {inProgressTickets}</p>
       <p>Total Tickets: {totalTickets}</p>
+      <p>Urgent Tickets: {totalUrgentTickets}</p>
       <button onClick={handleViewTickets}>View All Tickets</button>
     </div>
   );

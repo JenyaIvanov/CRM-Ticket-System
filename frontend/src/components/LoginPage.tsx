@@ -40,6 +40,8 @@ const LoginPage: React.FC = () => {
           <input
             type="text"
             value={username}
+            name="username"
+            autoComplete="on"
             onChange={(e) => setUsername(e.target.value)}
           />
         </div>
@@ -48,6 +50,8 @@ const LoginPage: React.FC = () => {
           <input
             type="password"
             value={password}
+            name="password"
+            autoComplete="on"
             onChange={(e) => setPassword(e.target.value)}
           />
         </div>

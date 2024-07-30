@@ -33,6 +33,8 @@ const UserManagement: React.FC = () => {
         // Token has expired
         localStorage.removeItem("jwt");
         navigate("/login");
+      } else if (decoded.role !== "admin") {
+        navigate("/tickets");
       } else {
         // Token is valid
         setCurrentUserRole(decoded.role);

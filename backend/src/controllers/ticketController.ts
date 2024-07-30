@@ -174,3 +174,13 @@ export const getTotalTicketsCount = (req: Request, res: Response) => {
     res.status(200).json({ results });
   });
 };
+
+export const getTotalUrgentTicketsCount = (req: Request, res: Response) => {
+  var sql = "SELECT COUNT(*) as count FROM Tickets WHERE priority = 'Urgent'";
+  connection.query(sql, (err, results: mysql.RowDataPacket[]) => {
+    if (err) {
+      return res.status(500).json({ error: err.message });
+    }
+    res.status(200).json({ results });
+  });
+};
