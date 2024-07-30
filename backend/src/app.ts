@@ -2,6 +2,7 @@ import mysql from "mysql2";
 import cors from "cors"; // Import CORS middleware
 import express from "express";
 import dotenv from "dotenv";
+import path from "path";
 import ticketRoutes from "./routes/ticketRoutes";
 import userRoutes from "./routes/userRoutes";
 import commentRoutes from "./routes/commentRoutes";
@@ -21,6 +22,12 @@ app.use(
     methods: ["GET", "POST", "PUT", "DELETE"], // Allow only specific methods
     allowedHeaders: ["Content-Type", "Authorization"], // Allow only specific headers
   })
+);
+
+// Serve static files from the 'public' directory
+app.use(
+  "/user-data",
+  express.static(path.join(__dirname, "..", "public", "user-data"))
 );
 
 // MySQL connection setup

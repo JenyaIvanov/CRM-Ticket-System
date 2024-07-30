@@ -6,10 +6,12 @@ import {
   createTicket,
   updateTicket,
   updateTicketStatus,
+  updateTicketPriority,
   deleteTicket,
   getOpenTicketsCount,
   getInProgressTicketsCount,
   getTotalTicketsCount,
+  getTotalUrgentTicketsCount,
 } from "../controllers/ticketController";
 import { authenticateJWT, authorizeUser } from "../middleware/authMiddleware";
 
@@ -25,6 +27,11 @@ router.put(
   updateTicket
 ); // Apply both authenticateJWT and authorizeUser middlewares
 router.put("/tickets/update-status/:id", authenticateJWT, updateTicketStatus); // Apply both authenticateJWT and authorizeUser middlewares
+router.put(
+  "/tickets/update-priority/:id",
+  authenticateJWT,
+  updateTicketPriority
+); // Apply both authenticateJWT and authorizeUser middlewares
 router.delete(
   "/tickets/:id",
   authenticateJWT,
@@ -47,6 +54,12 @@ router.get(
   "/statistics/tickets/total/count",
   authenticateJWT,
   getTotalTicketsCount
+);
+
+router.get(
+  "/statistics/tickets/total-urgent/count",
+  authenticateJWT,
+  getTotalUrgentTicketsCount
 );
 
 export default router;

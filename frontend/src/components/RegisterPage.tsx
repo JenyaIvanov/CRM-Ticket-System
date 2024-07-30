@@ -12,7 +12,7 @@ const RegisterPage: React.FC = () => {
 
   const handleRegister = async () => {
     try {
-      const response = await apiConfig.post("/users", {
+      await apiConfig.post("/users", {
         username,
         email,
         password,

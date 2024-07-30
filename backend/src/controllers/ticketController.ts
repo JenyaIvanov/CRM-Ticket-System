@@ -14,19 +14,23 @@ const connection = mysql.createConnection({
   database: "crm_ticket_system",
 });
 
-// Get all tickets or tickets by status
 export const getTickets = (req: Request, res: Response) => {
-  const { status } = req.query;
+  const { status, search } = req.query;
   let query = "SELECT * FROM Tickets";
+  let params: any[] = [];
 
-  if (status) {
+  if (search) {
+    query += " WHERE title LIKE ?";
+    params.push(`%${search}%`);
+  } else if (status) {
     query += " WHERE FIND_IN_SET(status, ?)";
+    params.push(status);
   }
 
   query +=
-    " ORDER BY FIELD(status, 'Open', 'In Progress', 'Resolved', 'Closed'), date_created ASC";
+    " ORDER BY FIELD(status, 'Open', 'In Progress', 'Resolved', 'Closed'), FIELD(priority, 'Urgent', 'High', 'Medium', 'Low'), date_created ASC";
 
-  connection.query(query, [status], (err, results: mysql.RowDataPacket[]) => {
+  connection.query(query, params, (err, results: mysql.RowDataPacket[]) => {
     if (err) {
       return res.status(500).json({ error: err.message });
     }
@@ -106,6 +110,26 @@ export const updateTicketStatus = (req: Request, res: Response) => {
   );
 };
 
+// Update ticket priority
+export const updateTicketPriority = (req: Request, res: Response) => {
+  const { id } = req.params;
+  const { priority } = req.body;
+
+  const updateFields: any = {};
+  if (priority) updateFields.priority = priority;
+
+  connection.query(
+    "UPDATE Tickets SET ? WHERE id = ?",
+    [updateFields, id],
+    (err) => {
+      if (err) {
+        return res.status(500).json({ error: err.message });
+      }
+      res.status(200).json({ id, ...updateFields });
+    }
+  );
+};
+
 // Delete a ticket
 export const deleteTicket = (req: Request, res: Response) => {
   const { id } = req.params;
@@ -143,6 +167,16 @@ export const getInProgressTicketsCount = (req: Request, res: Response) => {
 
 export const getTotalTicketsCount = (req: Request, res: Response) => {
   var sql = "SELECT COUNT(*) as count FROM Tickets";
+  connection.query(sql, (err, results: mysql.RowDataPacket[]) => {
+    if (err) {
+      return res.status(500).json({ error: err.message });
+    }
+    res.status(200).json({ results });
+  });
+};
+
+export const getTotalUrgentTicketsCount = (req: Request, res: Response) => {
+  var sql = "SELECT COUNT(*) as count FROM Tickets WHERE priority = 'Urgent'";
   connection.query(sql, (err, results: mysql.RowDataPacket[]) => {
     if (err) {
       return res.status(500).json({ error: err.message });

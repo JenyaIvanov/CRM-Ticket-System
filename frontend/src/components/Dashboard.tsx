@@ -1,21 +1,16 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import JWT from "expo-jwt";
+import { DecodedToken } from "../interfaces/DecodedToken";
 import apiConfig from "../api/apiConfig";
-
-interface DecodedToken {
-  exp: number;
-  username: string;
-  userId: number;
-  [key: string]: any;
-}
 
 const Dashboard: React.FC = () => {
   const [username, setUsername] = useState("");
-  const [user_id, setUserId] = useState(0);
+  const [userId, setUserId] = useState(0);
   const [openTickets, setOpenTickets] = useState(0);
   const [inProgressTickets, setInProgressTickets] = useState(0);
   const [totalTickets, setTotalTickets] = useState(0);
+  const [totalUrgentTickets, setTotalUrgentTickets] = useState(0);
   const navigate = useNavigate();
 
   const handleViewTickets = () => {
@@ -23,6 +18,7 @@ const Dashboard: React.FC = () => {
   };
 
   useEffect(() => {
+    // Retrieve JWT token from localStorage
     const TOKEN_KEY = process.env.REACT_APP_JWT;
     const jwtToken = localStorage.getItem("jwt");
 
@@ -32,6 +28,7 @@ const Dashboard: React.FC = () => {
     }
 
     try {
+      // Decode the Token to check if its valid.
       const decoded: DecodedToken = JWT.decode(jwtToken!, TOKEN_KEY!);
       const currentTime = Date.now() / 1000;
 
@@ -42,7 +39,7 @@ const Dashboard: React.FC = () => {
       } else {
         // Token is valid
         setUserId(decoded.userId);
-        setUsername(decoded.username);
+        fetchUserInfo(userId);
         fetchStatistics();
       }
     } catch (error) {
@@ -50,8 +47,21 @@ const Dashboard: React.FC = () => {
       localStorage.removeItem("jwt");
       navigate("/login");
     }
-  }, [navigate]);
+  }, [navigate, userId]);
 
+  // Function to handle personal details and personal statistics.
+  const fetchUserInfo = async (userId: number) => {
+    if (userId === 0) return;
+    try {
+      const response = await apiConfig.get(`/users/${userId}`);
+      const user = response.data;
+      setUsername(user.username);
+    } catch (error) {
+      console.error("Error fetching user info:", error);
+    }
+  };
+
+  // Function to handle fetiching Ticket and System statistics from the backend.
   const fetchStatistics = async () => {
     try {
       const openTicketsResponse = await apiConfig.get(
@@ -63,10 +73,14 @@ const Dashboard: React.FC = () => {
       const totalTicketsResponse = await apiConfig.get(
         "/statistics/tickets/total/count"
       );
+      const totalUrgentTicketsResponse = await apiConfig.get(
+        "/statistics/tickets/total-urgent/count"
+      );
 
       setOpenTickets(openTicketsResponse.data.results[0].count);
       setInProgressTickets(inProgressTicketsResponse.data.results[0].count);
       setTotalTickets(totalTicketsResponse.data.results[0].count);
+      setTotalUrgentTickets(totalUrgentTicketsResponse.data.results[0].count);
     } catch (error) {
       console.error("Error fetching statistics:", error);
     }
@@ -75,9 +89,11 @@ const Dashboard: React.FC = () => {
   return (
     <div>
       <h1>Welcome {username} to the system!</h1>
-      <p>Open Tickets: {openTickets}</p>
+      <p>Total Open Tickets: {openTickets + inProgressTickets}</p>
+      <p>New Tickets: {openTickets}</p>
       <p>Tickets In Progress: {inProgressTickets}</p>
       <p>Total Tickets: {totalTickets}</p>
+      <p>Urgent Tickets: {totalUrgentTickets}</p>
       <button onClick={handleViewTickets}>View All Tickets</button>
     </div>
   );
