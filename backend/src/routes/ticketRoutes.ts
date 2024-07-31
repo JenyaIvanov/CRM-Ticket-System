@@ -12,6 +12,7 @@ import {
   getInProgressTicketsCount,
   getTotalTicketsCount,
   getTotalUrgentTicketsCount,
+  getTotalOpenedTickets,
 } from "../controllers/ticketController";
 import { authenticateJWT, authorizeUser } from "../middleware/authMiddleware";
 
@@ -60,6 +61,12 @@ router.get(
   "/statistics/tickets/total-urgent/count",
   authenticateJWT,
   getTotalUrgentTicketsCount
+);
+
+router.get(
+  "/statistics/tickets/opened/",
+  authenticateJWT,
+  getTotalOpenedTickets
 );
 
 export default router;
