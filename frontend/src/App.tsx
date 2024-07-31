@@ -33,12 +33,11 @@ const MainLayout: React.FC = () => {
   const hideNavbar = ["/login", "/register"].includes(location.pathname);
 
   return (
-    <div style={{ display: "flex" }}>
+    <div className="">
       {!hideNavbar && <Navbar />}
       <div
         style={{
-          marginLeft: hideNavbar ? "0px" : "200px",
-          width: "100%",
+          marginLeft: hideNavbar ? "0px" : "205px",
         }}
       >
         <Routes>
