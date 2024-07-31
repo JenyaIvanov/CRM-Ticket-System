@@ -8,7 +8,6 @@ const RegisterPage: React.FC = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [email, setEmail] = useState("");
-  const [role, setRole] = useState("user"); // Default role, can be changed by user input
 
   const handleRegister = async () => {
     try {
@@ -16,7 +15,7 @@ const RegisterPage: React.FC = () => {
         username,
         email,
         password,
-        role,
+        role: "user",
       });
       // Assuming successful registration redirects to /login
       navigate("/login");
@@ -27,53 +26,60 @@ const RegisterPage: React.FC = () => {
   };
 
   return (
-    <div>
-      <h1>Register</h1>
+    <div className="font-poppins bg-gradient-to-r from-indigo-500 to-cyan-400 p-2 rounded-md mt-2 py-8 text-center">
+      <p className="text-[4rem] font-bold mb-6 text-white">CRM Ticket System</p>
       <form
+        className="flex font-thin flex-col gap-1"
         onSubmit={(e) => {
           e.preventDefault();
           handleRegister();
         }}
       >
-        <label>
-          Username:
+        <div>
+          <p className=" text-white">Username</p>
           <input
+            className="m-1 border rounded-xl border-cyan-700 p-[0.3rem]"
             type="text"
             value={username}
             onChange={(e) => setUsername(e.target.value)}
           />
-        </label>
-        <br />
-        <label>
-          Password:
+        </div>
+
+        <div>
+          <p className="text-white">Password</p>
           <input
+            className="m-1 border rounded-xl border-cyan-700 p-[0.3rem]"
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
           />
-        </label>
-        <br />
-        <label>
-          Email:
+        </div>
+
+        <div>
+          <p className="text-white">Email</p>
           <input
+            className="m-1 border rounded-xl border-cyan-700 p-[0.3rem]"
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
           />
-        </label>
-        <br />
-        <label>
-          Role:
-          <select value={role} onChange={(e) => setRole(e.target.value)}>
-            <option value="user">User</option>
-            <option value="admin">Admin</option>
-          </select>
-        </label>
-        <br />
-        <button type="submit">Register</button>
+        </div>
+
+        <div>
+          {" "}
+          <button
+            className=" bg-gradient-to-r from-emerald-400 to-cyan-400 rounded-xl hover:scale-110 shadow-md py-[0.3rem] m-2 px-[1rem] text-white"
+            type="submit"
+          >
+            Register
+          </button>
+        </div>
       </form>
-      <p>
-        Already have an account? <a href="/login">Login</a>
+      <p className="text-white mt-2">
+        Already have an account?{" "}
+        <a className="font-bold hover:text-yellow-300" href="/login">
+          Login
+        </a>
       </p>
     </div>
   );
