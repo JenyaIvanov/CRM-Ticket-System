@@ -76,6 +76,14 @@ const Navbar: React.FC = () => {
             Profile
           </Link>
         </li>
+        <li>
+          <Link
+            to="/knowledgebase"
+            className={location.pathname === "/knowledgebase" ? "active" : ""}
+          >
+            Knowledgebase
+          </Link>
+        </li>
 
         {currentUserRole === "admin" ? (
           <li>

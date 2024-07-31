@@ -1,14 +1,16 @@
 import React, { useEffect, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, Link } from "react-router-dom";
 import apiConfig from "../api/apiConfig";
 import { DecodedToken } from "../interfaces/DecodedToken";
 import { Ticket } from "../interfaces/Ticket";
+import { Article } from "../interfaces/Article";
 import { Comment } from "../interfaces/Comment";
 import JWT from "expo-jwt";
 
 const TicketDetails: React.FC = () => {
   const { ticketId } = useParams<{ ticketId: string }>();
   const [ticket, setTicket] = useState<Ticket | null>(null);
+  const [articles, setArticles] = useState<Article[] | null>(null);
   const [editMode, setEditMode] = useState(false);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
@@ -73,8 +75,22 @@ const TicketDetails: React.FC = () => {
       }
     };
 
+    // Function to handle fetching Ticket Details.
+    const fetchArticles = async () => {
+      try {
+        const response = await apiConfig.get(
+          `/knowledgebase/?search=${ticket?.title}`
+        );
+        const articles = response.data;
+        setArticles(articles);
+      } catch (error) {
+        console.error("Error fetching ticket details or users:", error);
+      }
+    };
+
     fetchTicketDetails();
-  }, [navigate, ticketId]);
+    fetchArticles();
+  }, [navigate, ticket?.title, ticketId]);
 
   // Function to handle Ticket editing.
   const handleEdit = async () => {
@@ -174,6 +190,10 @@ const TicketDetails: React.FC = () => {
     } catch (error) {
       console.error("Error submitting comment:", error);
     }
+  };
+
+  const handleArticleClick = (article_id: number) => {
+    navigate(`/knowledgebase/${article_id}`);
   };
 
   // Function to handle converting the Ticket to CSV.
@@ -349,6 +369,28 @@ const TicketDetails: React.FC = () => {
               <button onClick={() => handlePrintTicket(ticket, createdBy)}>
                 Print Ticket
               </button>
+
+              {/* Main Articles View */}
+              <div>
+                {articles && articles.length > 0 ? (
+                  <>
+                    <p>Related knowledgebase articles:</p>
+                    {articles.map((article) => (
+                      <button
+                        key={article.article_id}
+                        onClick={() =>
+                          handleArticleClick(article.article_id ?? 0)
+                        } // Provide a default value of 0 or handle undefined cases
+                      >
+                        <p>{article.title}</p>
+                      </button>
+                    ))}
+                  </>
+                ) : (
+                  ""
+                )}
+                <Link to="/knowledgebase">Explore Knowledgebase</Link>
+              </div>
 
               {/* Main Comment View */}
               <div>

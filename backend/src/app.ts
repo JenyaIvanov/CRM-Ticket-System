@@ -6,6 +6,7 @@ import path from "path";
 import ticketRoutes from "./routes/ticketRoutes";
 import userRoutes from "./routes/userRoutes";
 import commentRoutes from "./routes/commentRoutes";
+import knowledgebaseRoutes from "./routes/knowledgebaseRoutes";
 
 dotenv.config();
 
@@ -51,6 +52,7 @@ connection.connect((err) => {
 app.use("/api", ticketRoutes);
 app.use("/api", userRoutes);
 app.use("/api", commentRoutes);
+app.use("/api", knowledgebaseRoutes);
 
 // Basic route
 app.get("/", (req, res) => {
