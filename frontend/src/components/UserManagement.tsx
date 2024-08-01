@@ -112,69 +112,103 @@ const UserManagement: React.FC = () => {
   };
 
   return (
-    <div>
-      {/* User Management View */}
-      <h1>User Management</h1>
+    <div className="flex">
+      <div className="bg-gradient-to-br from-slate-100 to-neutral-100 w-[90%] shadow-lg border p-12 rounded-xl mt-2 ms-1">
+        {/* User Management View */}
+        <h1 className="text-2xl  font-poppins text-slate-700 drop-shadow-sm">
+          User Management
+        </h1>
+        <p className="mb-5 text-slate-500">
+          Click on any User to edit their details.
+        </p>
 
-      {/* Users List */}
-      {users.map((user) => (
-        <div key={user.id} className="user-card">
-          {/* User */}
-
-          <img
-            src={"http://localhost:3000/" + user.profile_picture}
-            alt="Profile"
-            width="50"
-            height="50"
-          />
-
-          <span>
-            {user.username} - {user.email} - {user.role}
-          </span>
-
-          <button onClick={() => openModal(user.id)}>View Details</button>
+        {/* Users List */}
+        <div className="font-thin text-lg grid grid-cols-4 border rounded-xl p-4 bg-slate-200 shadow mb-1">
+          <p>Profile Image</p>
+          <p>Role</p>
+          <p>Username</p>
+          <p>Email</p>
         </div>
-      ))}
+        {users.map((user) => (
+          <div
+            key={user.id}
+            className="grid grid-cols-4 items-center font-poppins border rounded-xl p-2 bg-neutral-50 hover:scale-105 hover:bg-slate-400 transition duration-300 mb-1 shadow-sm"
+            onClick={() => openModal(user.id)}
+          >
+            {/* User */}
 
-      {/* User Edit Modal */}
-      {selectedUser && (
-        <Modal
-          isOpen={modalIsOpen}
-          ariaHideApp={false}
-          onRequestClose={closeModal}
-        >
-          <h2>User Details</h2>
+            <img
+              src={"http://localhost:3000/" + user.profile_picture}
+              alt="Profile"
+              className=" object-contain rounded-full"
+              width="50"
+              height="50"
+            />
 
-          {/* User: Profile Pictrue */}
-          <p>Profile Picture</p>
-          <img
-            src={"http://localhost:3000/" + selectedUser.profile_picture}
-            alt="Profile"
-            width="100"
-            height="100"
-          />
-          <button onClick={handleResetProfilePicture}>
-            Reset Picture To Default
-          </button>
+            <div
+              className={
+                user.role === "admin"
+                  ? "text-white bg-gradient-to-br from-rose-500 to-cyan-400 w-fit px-[0.6rem] py-[0.4rem] rounded-md shadow-sm"
+                  : "text-white bg-gradient-to-br from-teal-500 to-emerald-400 w-fit px-[1rem] py-[0.4rem] rounded-md shadow-sm"
+              }
+            >
+              {user.role}
+            </div>
 
-          {/* User: Profile Details */}
-          <p>Username: {selectedUser.username}</p>
-          <p>Email: {selectedUser.email}</p>
+            <div>{user.username}</div>
 
-          {/* User: Change Role */}
-          <p>
-            Role:
-            <select value={newRole} onChange={handleRoleChange}>
-              <option value="user">User</option>
-              <option value="admin">Admin</option>
-            </select>
-          </p>
+            <div>{user.email}</div>
 
-          {/* User: Submit Changes Role */}
-          <button onClick={handleUpdateProfile}>Update Profile</button>
-          <button onClick={closeModal}>Close</button>
-        </Modal>
-      )}
+            {/* <button
+              className="bg-gradient-to-b from-gray-800 to-gray-600 text-white px-[0.8rem] py-[0.2rem] rounded-xl"
+              onClick={() => openModal(user.id)}
+            >
+              {" "}
+              Details
+            </button> */}
+          </div>
+        ))}
+
+        {/* User Edit Modal */}
+        {selectedUser && (
+          <Modal
+            isOpen={modalIsOpen}
+            ariaHideApp={false}
+            onRequestClose={closeModal}
+          >
+            <h2>User Details</h2>
+
+            {/* User: Profile Pictrue */}
+            <p>Profile Picture</p>
+            <img
+              src={"http://localhost:3000/" + selectedUser.profile_picture}
+              alt="Profile"
+              width="100"
+              height="100"
+            />
+            <button onClick={handleResetProfilePicture}>
+              Reset Picture To Default
+            </button>
+
+            {/* User: Profile Details */}
+            <p>Username: {selectedUser.username}</p>
+            <p>Email: {selectedUser.email}</p>
+
+            {/* User: Change Role */}
+            <p>
+              Role:
+              <select value={newRole} onChange={handleRoleChange}>
+                <option value="user">User</option>
+                <option value="admin">Admin</option>
+              </select>
+            </p>
+
+            {/* User: Submit Changes Role */}
+            <button onClick={handleUpdateProfile}>Update Profile</button>
+            <button onClick={closeModal}>Close</button>
+          </Modal>
+        )}
+      </div>
     </div>
   );
 };
