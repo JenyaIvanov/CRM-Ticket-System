@@ -89,17 +89,37 @@ export const loginUser = (req: Request, res: Response) => {
   );
 };
 
-// Get all users
+// Get all users sorted by a specified field and order
 export const getUsers = (req: Request, res: Response) => {
-  connection.query(
-    "SELECT * FROM Users",
-    (err, results: mysql.RowDataPacket[]) => {
-      if (err) {
-        return res.status(500).json({ error: err.message });
-      }
-      res.json(results);
+  const { field, order } = req.query;
+
+  // Validate the field and order
+  //console.log("F:" + field + ". O: " + order);
+  const validFields = ["username", "role", "email", "tickets_count"];
+  const validOrder = ["ASC", "DESC"];
+
+  if (
+    !validFields.includes(field as string) ||
+    !validOrder.includes(order as string)
+  ) {
+    return res.status(400).json({ error: "Invalid field or order parameter" });
+  }
+
+  // Construct the SQL query
+  const sql = `
+    SELECT id, username, role, email, profile_picture, (SELECT COUNT(*) FROM Tickets WHERE Tickets.created_by = Users.id) as tickets_count
+    FROM Users
+    ORDER BY ${mysql.escapeId(field as string)} ${order}
+  `;
+
+  //console.log(sql);
+
+  connection.query(sql, (err, results: mysql.RowDataPacket[]) => {
+    if (err) {
+      return res.status(500).json({ error: err.message });
     }
-  );
+    res.json(results);
+  });
 };
 
 // Get a single user by ID

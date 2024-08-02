@@ -4,14 +4,19 @@ import Modal from "react-modal";
 import JWT from "expo-jwt";
 import { useNavigate } from "react-router-dom";
 import { DecodedToken } from "../interfaces/DecodedToken";
-import { User } from "../interfaces/User";
+import { UserWithTicketCount } from "../interfaces/User";
+import { RiArrowDownSFill, RiArrowUpSFill } from "react-icons/ri";
 
 const UserManagement: React.FC = () => {
-  const [users, setUsers] = useState<User[]>([]);
+  const [users, setUsers] = useState<UserWithTicketCount[]>([]);
   const [currentUserRole, setCurrentUserRole] = useState<string>("");
-  const [selectedUser, setSelectedUser] = useState<User | null>(null);
+  const [selectedUser, setSelectedUser] = useState<UserWithTicketCount | null>(
+    null
+  );
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const [newRole, setNewRole] = useState<string>("");
+  const [usersFilter, setUsersFilter] = useState<string>("username");
+  const [orderFilter, setOrderFilter] = useState<string>("ASC");
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -47,7 +52,9 @@ const UserManagement: React.FC = () => {
 
     const fetchUsers = async () => {
       try {
-        const response = await apiConfig.get("/users");
+        const response = await apiConfig.get(
+          `/users?field=${usersFilter}&order=${orderFilter}`
+        );
         setUsers(response.data);
       } catch (error) {
         console.error("Error fetching users:", error);
@@ -55,7 +62,7 @@ const UserManagement: React.FC = () => {
     };
 
     fetchUsers();
-  }, [navigate]);
+  }, [navigate, orderFilter, usersFilter]);
 
   const openModal = async (userId: number) => {
     try {
@@ -93,6 +100,13 @@ const UserManagement: React.FC = () => {
     }
   };
 
+  const handleFilterChange = (filter: string) => {
+    setUsersFilter(filter);
+
+    if (orderFilter === "DESC") setOrderFilter("ASC");
+    else setOrderFilter("DESC");
+  };
+
   const handleUpdateProfile = async () => {
     if (selectedUser && currentUserRole) {
       try {
@@ -118,21 +132,100 @@ const UserManagement: React.FC = () => {
         <h1 className="text-2xl  font-poppins text-slate-700 drop-shadow-sm">
           User Management
         </h1>
+        <p className="text-slate-500">Select any user to edit their details.</p>
         <p className="mb-5 text-slate-500">
-          Click on any User to edit their details.
+          Click on the column headers below to sort the list in either ascending
+          or descending order.
         </p>
 
         {/* Users List */}
-        <div className="font-thin text-lg grid grid-cols-4 border rounded-xl p-4 bg-slate-200 shadow mb-1">
+        <div className="font-thin text-slate-600 text-lg grid grid-cols-5 border rounded-xl p-4 bg-slate-200 shadow mb-1">
           <p>Profile Image</p>
-          <p>Role</p>
-          <p>Username</p>
-          <p>Email</p>
+          <p
+            className={
+              usersFilter === "role"
+                ? "flex flex-row items-center gap-1 hover:cursor-pointer font-bold transition duration-300"
+                : "flex flex-row items-center gap-1 hover:cursor-pointer"
+            }
+            onClick={() => handleFilterChange("role")}
+          >
+            Role
+            {usersFilter === "role" && orderFilter === "DESC" ? (
+              <RiArrowDownSFill className="text-2xl" />
+            ) : (
+              ""
+            )}
+            {usersFilter === "role" && orderFilter === "ASC" ? (
+              <RiArrowUpSFill className="text-2xl" />
+            ) : (
+              ""
+            )}
+          </p>
+          <p
+            className={
+              usersFilter === "username"
+                ? "flex flex-row items-center gap-1 hover:cursor-pointer font-bold transition duration-300"
+                : "flex flex-row items-center gap-1 hover:cursor-pointer"
+            }
+            onClick={() => handleFilterChange("username")}
+          >
+            Username
+            {usersFilter === "username" && orderFilter === "DESC" ? (
+              <RiArrowDownSFill className="text-2xl" />
+            ) : (
+              ""
+            )}
+            {usersFilter === "username" && orderFilter === "ASC" ? (
+              <RiArrowUpSFill className="text-2xl" />
+            ) : (
+              ""
+            )}
+          </p>
+          <p
+            className={
+              usersFilter === "email"
+                ? "flex flex-row items-center gap-1 hover:cursor-pointer font-bold transition duration-300"
+                : "flex flex-row items-center gap-1 hover:cursor-pointer"
+            }
+            onClick={() => handleFilterChange("email")}
+          >
+            Email
+            {usersFilter === "email" && orderFilter === "DESC" ? (
+              <RiArrowDownSFill className="text-2xl" />
+            ) : (
+              ""
+            )}
+            {usersFilter === "email" && orderFilter === "ASC" ? (
+              <RiArrowUpSFill className="text-2xl" />
+            ) : (
+              ""
+            )}
+          </p>
+          <p
+            className={
+              usersFilter === "tickets_count"
+                ? "flex flex-row items-center gap-1 hover:cursor-pointer font-bold transition duration-300"
+                : "flex flex-row items-center gap-1 hover:cursor-pointer"
+            }
+            onClick={() => handleFilterChange("tickets_count")}
+          >
+            Tickets
+            {usersFilter === "tickets_count" && orderFilter === "DESC" ? (
+              <RiArrowDownSFill className="text-2xl" />
+            ) : (
+              ""
+            )}
+            {usersFilter === "tickets_count" && orderFilter === "ASC" ? (
+              <RiArrowUpSFill className="text-2xl" />
+            ) : (
+              ""
+            )}
+          </p>
         </div>
         {users.map((user) => (
           <div
             key={user.id}
-            className="grid grid-cols-4 items-center font-poppins border rounded-xl p-2 bg-neutral-50 hover:scale-105 hover:bg-slate-400 transition duration-300 mb-1 shadow-sm"
+            className="grid grid-cols-5 items-center font-poppins border rounded-xl p-2 bg-neutral-50 hover:scale-105 hover:bg-slate-400 transition duration-300 mb-1 shadow-sm"
             onClick={() => openModal(user.id)}
           >
             {/* User */}
@@ -158,6 +251,8 @@ const UserManagement: React.FC = () => {
             <div>{user.username}</div>
 
             <div>{user.email}</div>
+
+            <div>{user.tickets_count}</div>
 
             {/* <button
               className="bg-gradient-to-b from-gray-800 to-gray-600 text-white px-[0.8rem] py-[0.2rem] rounded-xl"

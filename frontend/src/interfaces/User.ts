@@ -5,3 +5,7 @@ export interface User {
   role: string;
   profile_picture: string;
 }
+
+export interface UserWithTicketCount extends User {
+  tickets_count: number;
+}
