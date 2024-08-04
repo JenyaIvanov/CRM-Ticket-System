@@ -8,3 +8,7 @@ export interface Ticket {
   assigned_to: string;
   description: string;
 }
+
+export interface TicketWithCommentsCount extends Ticket {
+  comments_count: number;
+}

@@ -9,3 +9,8 @@ export interface User {
 export interface UserWithTicketCount extends User {
   tickets_count: number;
 }
+
+export interface UserWithTickets extends User {
+  tickets_count: number;
+  tickets: [];
+}

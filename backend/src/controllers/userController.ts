@@ -125,19 +125,38 @@ export const getUsers = (req: Request, res: Response) => {
 // Get a single user by ID
 export const getUserById = (req: Request, res: Response) => {
   const { id } = req.params;
-  connection.query(
-    "SELECT * FROM Users WHERE id = ?",
-    [id],
-    (err, results: mysql.RowDataPacket[]) => {
-      if (err) {
-        return res.status(500).json({ error: err.message });
-      }
-      if (results.length === 0) {
-        return res.status(404).json({ message: "User not found" });
-      }
-      res.json(results[0]);
+  const sql = `
+    SELECT 
+      Users.id, 
+      Users.username, 
+      Users.role, 
+      Users.email,
+      Users.profile_picture,
+      (SELECT COUNT(*) FROM Tickets WHERE Tickets.created_by = Users.id) AS tickets_count,
+      (SELECT JSON_ARRAYAGG(JSON_OBJECT(
+        'id', Tickets.id, 
+        'title', Tickets.title, 
+        'status', Tickets.status, 
+        'priority', Tickets.priority, 
+        'description', Tickets.description, 
+        'date_created', Tickets.date_created,
+        'comments_count', (SELECT COUNT(*) FROM Comments WHERE Comments.ticket_id = Tickets.id)
+      )) FROM Tickets WHERE Tickets.created_by = Users.id) AS tickets
+    FROM 
+      Users 
+    WHERE 
+      Users.id = ?
+  `;
+
+  connection.query(sql, [id], (err, results: mysql.RowDataPacket[]) => {
+    if (err) {
+      return res.status(500).json({ error: err.message });
     }
-  );
+    if (results.length === 0) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    res.json(results[0]);
+  });
 };
 
 // Create a new user

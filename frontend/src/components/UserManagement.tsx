@@ -4,15 +4,23 @@ import Modal from "react-modal";
 import JWT from "expo-jwt";
 import { useNavigate } from "react-router-dom";
 import { DecodedToken } from "../interfaces/DecodedToken";
-import { UserWithTicketCount } from "../interfaces/User";
+import { TicketWithCommentsCount } from "../interfaces/Ticket";
+import { UserWithTicketCount, UserWithTickets } from "../interfaces/User";
 import { RiArrowDownSFill, RiArrowUpSFill } from "react-icons/ri";
+import { FaRegUser, FaComments } from "react-icons/fa";
+import { MdOutlineMail } from "react-icons/md";
+import { SiAuth0 } from "react-icons/si";
+import { TiTicket } from "react-icons/ti";
 
 const UserManagement: React.FC = () => {
   const [users, setUsers] = useState<UserWithTicketCount[]>([]);
   const [currentUserRole, setCurrentUserRole] = useState<string>("");
-  const [selectedUser, setSelectedUser] = useState<UserWithTicketCount | null>(
+  const [selectedUser, setSelectedUser] = useState<UserWithTickets | null>(
     null
   );
+  const [selectedUserTickets, setSelectedUserTickets] = useState<
+    TicketWithCommentsCount[]
+  >([]);
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const [newRole, setNewRole] = useState<string>("");
   const [usersFilter, setUsersFilter] = useState<string>("username");
@@ -68,6 +76,7 @@ const UserManagement: React.FC = () => {
     try {
       const response = await apiConfig.get(`/users/${userId}`);
       setSelectedUser(response.data);
+      setSelectedUserTickets(response.data.tickets);
       setNewRole(response.data.role);
       setModalIsOpen(true);
     } catch (error) {
@@ -85,6 +94,13 @@ const UserManagement: React.FC = () => {
   };
 
   const handleResetProfilePicture = async () => {
+    const confirmAction = window.confirm(
+      `Are you sure you want to reset ${selectedUser?.username} profile picture to default?`
+    );
+    if (!confirmAction) {
+      return;
+    }
+
     if (selectedUser && currentUserRole) {
       try {
         await apiConfig.put(`/user-management/users/${selectedUser.id}`, {
@@ -100,6 +116,10 @@ const UserManagement: React.FC = () => {
     }
   };
 
+  const handleTicketClick = (ticketId: string) => {
+    navigate(`/tickets/${ticketId}`);
+  };
+
   const handleFilterChange = (filter: string) => {
     setUsersFilter(filter);
 
@@ -108,6 +128,13 @@ const UserManagement: React.FC = () => {
   };
 
   const handleUpdateProfile = async () => {
+    const confirmAction = window.confirm(
+      `Are you sure you want to update ${selectedUser?.username} profile?`
+    );
+    if (!confirmAction) {
+      return;
+    }
+
     if (selectedUser && currentUserRole) {
       try {
         await apiConfig.put(`/user-management/users/${selectedUser.id}`, {
@@ -271,36 +298,139 @@ const UserManagement: React.FC = () => {
             ariaHideApp={false}
             onRequestClose={closeModal}
           >
-            <h2>User Details</h2>
+            <div className="flex justify-center flex-col items-center">
+              <h2 className="font-poppins text-2xl mb-1">User Details</h2>
 
-            {/* User: Profile Pictrue */}
-            <p>Profile Picture</p>
-            <img
-              src={"http://localhost:3000/" + selectedUser.profile_picture}
-              alt="Profile"
-              width="100"
-              height="100"
-            />
-            <button onClick={handleResetProfilePicture}>
-              Reset Picture To Default
-            </button>
+              {/* User: Profile Pictrue */}
+              <p className="font-thin text-sm">Profile Picture</p>
+              <img
+                src={"http://localhost:3000/" + selectedUser.profile_picture}
+                alt="Profile"
+                width="100"
+                height="100"
+                className="rounded-full shadow m-2"
+              />
+              <button
+                className="px-3 py-2 rounded-lg bg-slate-500 text-white"
+                onClick={handleResetProfilePicture}
+              >
+                Reset Picture To Default
+              </button>
 
-            {/* User: Profile Details */}
-            <p>Username: {selectedUser.username}</p>
-            <p>Email: {selectedUser.email}</p>
+              <div className="grid-rows-3 m-2 p-2">
+                {/* User: Profile Details */}
+                <div className="flex flex-row items-center gap-2">
+                  <FaRegUser className="text-xl" />
+                  <p className="border p-2 rounded-xl mb-1 w-auto">
+                    Username: {selectedUser.username}
+                  </p>
+                </div>
+                <div className="flex flex-row items-center gap-2">
+                  <MdOutlineMail className="text-xl" />
+                  <p className="border p-2 rounded-xl mb-1">
+                    Email: {selectedUser.email}
+                  </p>
+                </div>
 
-            {/* User: Change Role */}
-            <p>
-              Role:
-              <select value={newRole} onChange={handleRoleChange}>
-                <option value="user">User</option>
-                <option value="admin">Admin</option>
-              </select>
+                <div className="flex flex-row items-center gap-2 mb-1">
+                  <SiAuth0 className="text-xl" />
+                  {/* User: Change Role */}
+                  <p className="border p-2 rounded-xl">
+                    Role:
+                    <select value={newRole} onChange={handleRoleChange}>
+                      <option value="user">User</option>
+                      <option value="admin">Admin</option>
+                    </select>
+                  </p>
+                </div>
+
+                <div className="flex flex-row items-center gap-2">
+                  <TiTicket className="text-xl" />
+                  <p className="border p-2 rounded-xl mb-1">
+                    Tickets Crteated: {selectedUser.tickets_count}
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex flex-row gap-2">
+                {/* User: Submit Changes Role */}
+                <button
+                  className="text-white font-poppins px-[1rem] py-[0.4rem] shadow border hover:scale-105 rounded-lg bg-gradient-to-r from-emerald-500 to-lime-600"
+                  onClick={handleUpdateProfile}
+                >
+                  Update
+                </button>
+                <button
+                  className="text-white font-poppins px-[1rem] py-[0.4rem] shadow border hover:scale-105 rounded-lg bg-gradient-to-r from-rose-400 to-red-500"
+                  onClick={closeModal}
+                >
+                  Close
+                </button>
+              </div>
+            </div>
+
+            {/* User: Tickets View */}
+            <p className="font-thin text-xl mt-4 mb-1">
+              Tickets created by {selectedUser.username}:
             </p>
-
-            {/* User: Submit Changes Role */}
-            <button onClick={handleUpdateProfile}>Update Profile</button>
-            <button onClick={closeModal}>Close</button>
+            <div className="flex flex-row gap-1">
+              {selectedUserTickets && (
+                <>
+                  {selectedUserTickets.map((ticket) => (
+                    <div
+                      className="px-6 py-3 flex flex-col hover:cursor-pointer rounded-xl w-[17rem] bg-gradient-to-br text-white border shadow from-gray-700 to-cyan-600"
+                      onClick={() => handleTicketClick(ticket.id)}
+                      key={ticket.id}
+                    >
+                      <div className="flex flex-row items-center gap-2 mb-1 justify-between">
+                        <p className=" font-poppins text-lg font-bold">
+                          {ticket.title}
+                        </p>
+                        <div className="w-fit">
+                          {ticket.priority === "Urgent" ? (
+                            <p className="px-[0.65rem] py-[0.25rem] rounded-xl text-sm text-white bg-gradient-to-r from-red-500 to-orange-500">
+                              Urgent
+                            </p>
+                          ) : (
+                            ""
+                          )}
+                          {ticket.priority === "High" ? (
+                            <p className="px-[0.65rem] py-[0.25rem] rounded-xl text-sm text-white bg-gradient-to-r from-indigo-500 to-blue-500">
+                              High
+                            </p>
+                          ) : (
+                            ""
+                          )}
+                          {ticket.priority === "Medium" ? (
+                            <p className="px-[0.65rem] py-[0.25rem] rounded-xl text-sm text-white bg-gradient-to-r from-fuchsia-600 to-purple-600">
+                              Medium
+                            </p>
+                          ) : (
+                            ""
+                          )}
+                          {ticket.priority === "Low" ? (
+                            <p className="px-[0.65rem] py-[0.25rem] rounded-xl text-sm text-white bg-gradient-to-r from-emerald-500 to-lime-600">
+                              Low
+                            </p>
+                          ) : (
+                            ""
+                          )}
+                        </div>
+                      </div>
+                      <p className="font-thin text-sm my-1">
+                        Date Created:{" "}
+                        {new Date(ticket.date_created).toLocaleDateString()}
+                      </p>
+                      <p className="font-poppins">Status: {ticket.status}</p>
+                      <div className="flex justify-end items-center gap-1">
+                        <FaComments />
+                        <p className="font-thin">{ticket.comments_count}</p>
+                      </div>
+                    </div>
+                  ))}
+                </>
+              )}
+            </div>
           </Modal>
         )}
       </div>
