@@ -311,7 +311,7 @@ const UserManagement: React.FC = () => {
                 className="rounded-full shadow m-2"
               />
               <button
-                className="px-3 py-2 rounded-lg bg-slate-500 text-white"
+                className="px-3 py-2 rounded-lg bg-slate-500 text-white hover:scale-105 transition duration-300"
                 onClick={handleResetProfilePicture}
               >
                 Reset Picture To Default
@@ -355,13 +355,13 @@ const UserManagement: React.FC = () => {
               <div className="flex flex-row gap-2">
                 {/* User: Submit Changes Role */}
                 <button
-                  className="text-white font-poppins px-[1rem] py-[0.4rem] shadow border hover:scale-105 rounded-lg bg-gradient-to-r from-emerald-500 to-lime-600"
+                  className="text-white font-poppins px-[1rem] py-[0.4rem] shadow border hover:scale-105 rounded-lg bg-gradient-to-r from-emerald-500 to-lime-600 transition duration-300"
                   onClick={handleUpdateProfile}
                 >
                   Update
                 </button>
                 <button
-                  className="text-white font-poppins px-[1rem] py-[0.4rem] shadow border hover:scale-105 rounded-lg bg-gradient-to-r from-rose-400 to-red-500"
+                  className="text-white font-poppins px-[1rem] py-[0.4rem] shadow border hover:scale-105 rounded-lg bg-gradient-to-r from-rose-400 to-red-500 transition duration-300"
                   onClick={closeModal}
                 >
                   Close
@@ -370,15 +370,15 @@ const UserManagement: React.FC = () => {
             </div>
 
             {/* User: Tickets View */}
-            <p className="font-thin text-xl mt-4 mb-1">
+            <p className="font-thin text-xl mt-4 mb-2">
               Tickets created by {selectedUser.username}:
             </p>
-            <div className="flex flex-row gap-1">
+            <div className="flex flex-row gap-2">
               {selectedUserTickets && (
                 <>
                   {selectedUserTickets.map((ticket) => (
                     <div
-                      className="px-6 py-3 flex flex-col hover:cursor-pointer rounded-xl w-[17rem] bg-gradient-to-br text-white border shadow from-gray-700 to-cyan-600"
+                      className="px-6 py-3 flex flex-col transition duration-500 hover:scale-105 hover:cursor-pointer rounded-xl w-[17rem] bg-gradient-to-br text-white border shadow from-gray-700 to-cyan-600"
                       onClick={() => handleTicketClick(ticket.id)}
                       key={ticket.id}
                     >
@@ -388,7 +388,7 @@ const UserManagement: React.FC = () => {
                         </p>
                         <div className="w-fit">
                           {ticket.priority === "Urgent" ? (
-                            <p className="px-[0.65rem] py-[0.25rem] rounded-xl text-sm text-white bg-gradient-to-r from-red-500 to-orange-500">
+                            <p className="px-[0.65rem] py-[0.3rem] rounded-xl text-sm text-white bg-gradient-to-r from-red-500 to-orange-500">
                               Urgent
                             </p>
                           ) : (
