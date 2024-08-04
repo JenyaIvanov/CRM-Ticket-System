@@ -4,6 +4,8 @@ import apiConfig from "../api/apiConfig";
 import JWT from "expo-jwt";
 import { DecodedToken } from "../interfaces/DecodedToken";
 import { Article } from "../interfaces/Article";
+import { FaPlusCircle } from "react-icons/fa";
+import { MdOutlineArticle } from "react-icons/md";
 
 const KnowledgeBase: React.FC = () => {
   const [articles, setArticles] = useState<Article[]>([]);
@@ -79,40 +81,64 @@ const KnowledgeBase: React.FC = () => {
   };
 
   return (
-    <div>
+    <div className="flex flex-col ms-5">
       {/* Articles */}
-      <h1>Knowledgebase</h1>
+      <h1 className="text-slate-600 text-2xl font-poppins font-bold mb-3 mt-5">
+        Knowledgebase
+      </h1>
 
-      {/* Create A New Article */}
-      <button onClick={handleCreateArticle}>Create New Article</button>
+      <p className="font-thin mt-1 mb-4 w-11/12">
+        Explore our comprehensive collection of articles and guides to assist
+        with troubleshooting and instructional needs. Whether you're seeking
+        step-by-step instructions or expert tips, the Knowledgebase is here to
+        support your efforts.
+      </p>
+
+      <div className="text-white font-thin flex flex-row items-center gap-2 px-[0.7rem] py-[0.5rem] bg-gradient-to-br from-emerald-500 to-teal-400  rounded-md shadow w-fit">
+        {/* Create A New Article */}
+        <FaPlusCircle className="text-xl" />
+        <button onClick={handleCreateArticle}>Create New Article</button>
+      </div>
 
       {/* Search */}
-      <div>
+      <div className="w-11/12">
         {/* Search Box */}
         <input
+          className="w-full h-fit bg-slate-200 p-2 focus:border-2 focus:outline-none focus:border-teal-600 shadow text-slate-600 rounded-xl my-5 placeholder-slate-600"
           type="text"
-          placeholder="Search"
+          placeholder="Search the knowledgebase..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
         />
       </div>
 
+      <div className="grid grid-cols-4 p-2 font-poppins rounded-lg bg-emerald-500 text-white w-11/12 items-center border shadow mb-2">
+        <p>Title</p>
+        <p>Author</p>
+        <p>Category</p>
+        <p>Date Created</p>
+      </div>
+
       {/* Main Articles View */}
-      <div>
+      <div className="w-11/12">
         {articles.map((article) => (
-          <button
+          <div
+            className="grid grid-cols-4 font-thin px-[0.4rem] py-[0.6rem] rounded-lg mb-[0.35rem] bg-white w-full items-center border shadow hover:cursor-pointer hover:bg-neutral-200 hover:scale-[103%] transition duration-300"
             key={article.article_id}
             onClick={() => handleArticleClick(article.article_id ?? 0)} // Provide a default value of 0 or handle undefined cases
           >
-            <h2>{article.title}</h2>
-            <p>Author: {users[article.author_id]}</p>
+            <div className="flex flex-row gap-1 items-center">
+              <MdOutlineArticle className="text-xl text-teal-500" />
+              <p>{article.title}</p>
+            </div>
+            <p>{users[article.author_id]}</p>
+            <p>Uncategorized</p>
             <p>
-              Date Created:{" "}
               {article.date_created
                 ? new Date(article.date_created).toLocaleDateString()
                 : "Not available"}
             </p>
-          </button>
+          </div>
         ))}
       </div>
     </div>

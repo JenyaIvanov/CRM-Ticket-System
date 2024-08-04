@@ -17,6 +17,8 @@ const Navbar: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
   useEffect(() => {
+    console.log(location);
+
     // Retrieve JWT token from localStorage
     const TOKEN_KEY = process.env.REACT_APP_JWT;
     const jwtToken = localStorage.getItem("jwt");
@@ -109,7 +111,7 @@ const Navbar: React.FC = () => {
 
         <div
           className={
-            location.pathname === "/tickets"
+            location.pathname.includes("/tickets")
               ? "flex flex-row gap-2 items-center text-white  px-[0.6rem] bg-gradient-to-br from-amber-500 to-orange-400 py-[0.5rem] rounded-md shadow-md transition duration-500"
               : "flex flex-row gap-2 items-center hover:scale-[110%]"
           }
@@ -122,7 +124,7 @@ const Navbar: React.FC = () => {
 
         <div
           className={
-            location.pathname === "/knowledgebase"
+            location.pathname.includes("/knowledgebase")
               ? "flex flex-row gap-2 items-center text-white bg-gradient-to-br from-emerald-500 to-teal-400 px-[0.6rem] py-[0.5rem] rounded-md shadow-md transition duration-500"
               : "flex flex-row gap-2 items-center hover:scale-[110%]"
           }
