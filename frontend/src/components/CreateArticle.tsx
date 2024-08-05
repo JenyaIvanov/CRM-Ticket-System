@@ -2,12 +2,15 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import apiConfig from "../api/apiConfig";
 import { DecodedToken } from "../interfaces/DecodedToken";
+import { Categories } from "../interfaces/Categories";
 import JWT from "expo-jwt";
 
 const CreateArticle: React.FC = () => {
   const [user_id, setUserId] = useState(0);
   const [title, setTitle] = useState("");
   const [text, setText] = useState("");
+  const [categories, setCategories] = useState<Categories[]>([]);
+  const [category, setCategory] = useState("1");
   const [attachments, setAttachments] = useState<File[]>([]);
   const navigate = useNavigate();
 
@@ -20,6 +23,18 @@ const CreateArticle: React.FC = () => {
       return;
     }
 
+    // Function handles fetching all the articles or the given search query.
+    const fetchCategories = async () => {
+      try {
+        let url = "/knowledgebase/categories";
+
+        const response = await apiConfig.get(url);
+        setCategories(response.data);
+      } catch (error) {
+        console.error("Error fetching categories:", error);
+      }
+    };
+
     try {
       const decoded: DecodedToken = JWT.decode(jwtToken, TOKEN_KEY!);
       const currentTime = Date.now() / 1000;
@@ -29,6 +44,7 @@ const CreateArticle: React.FC = () => {
         navigate("/login");
       } else {
         setUserId(decoded.userId);
+        fetchCategories();
       }
     } catch (error) {
       console.error("Error decoding token:", error);
@@ -49,6 +65,7 @@ const CreateArticle: React.FC = () => {
     formData.append("author_id", user_id.toString());
     formData.append("title", title);
     formData.append("text", text);
+    formData.append("category", category);
 
     attachments.forEach((file) => {
       formData.append("attachments", file);
@@ -81,6 +98,23 @@ const CreateArticle: React.FC = () => {
             onChange={(e) => setTitle(e.target.value)}
             required
           />
+        </div>
+        <div>
+          <p>Category: </p>
+          <select
+            id="category-select"
+            value={category}
+            onChange={(e) => setCategory(e.target.value)}
+          >
+            <option value="" disabled>
+              Select a category
+            </option>
+            {categories.map((cat) => (
+              <option key={cat.id} value={cat.id}>
+                {cat.title}
+              </option>
+            ))}
+          </select>
         </div>
         <div>
           <label>Text:</label>

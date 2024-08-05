@@ -19,6 +19,7 @@ import UserManagement from "./components/UserManagement";
 import KnowledgeBase from "./components/KnowledgeBase";
 import CreateArticle from "./components/CreateArticle";
 import ArticleDetails from "./components/ArticleDetails";
+import EditCategories from "./components/EditCategories";
 
 const App: React.FC = () => {
   return (
@@ -46,11 +47,18 @@ const MainLayout: React.FC = () => {
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/tickets" element={<Tickets />} />
           <Route path="/tickets/:ticketId" element={<TicketDetails />} />
-          <Route path="/create-ticket" element={<CreateTicket />} />
+          <Route path="/create-ticket/" element={<CreateTicket />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/knowledgebase/" element={<KnowledgeBase />} />
           <Route path="/user-management/" element={<UserManagement />} />
-          <Route path="/create-article/" element={<CreateArticle />} />
+          <Route
+            path="/knowledgebase/create-article/"
+            element={<CreateArticle />}
+          />
+          <Route
+            path="/knowledgebase/edit-categories/"
+            element={<EditCategories />}
+          />
           <Route
             path="/knowledgebase/:articleId"
             element={<ArticleDetails />}

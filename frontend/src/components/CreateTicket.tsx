@@ -49,6 +49,7 @@ const CreateTicket: React.FC = () => {
       title,
       description,
       status: "Open",
+      priority: "Low",
       created_by: user_id,
       assigned_to: user_id,
     };

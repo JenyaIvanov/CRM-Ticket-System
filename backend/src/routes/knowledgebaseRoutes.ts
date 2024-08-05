@@ -5,6 +5,9 @@ import {
   createArticle,
   updateArticle,
   deleteArticle,
+  getCategories,
+  addCategories,
+  deleteCategories,
 } from "../controllers/knowledgeController";
 import { authenticateJWT, authorizeUser } from "../middleware/authMiddleware";
 import multer from "multer";
@@ -28,6 +31,14 @@ const upload = multer({ storage: storage });
 
 const router = express.Router();
 
+router.get("/knowledgebase/categories", authenticateJWT, getCategories);
+router.post("/knowledgebase/categories", authenticateJWT, addCategories);
+router.delete(
+  "/knowledgebase/categories/:id",
+  authenticateJWT,
+  authorizeUser("admin"),
+  deleteCategories
+);
 router.get("/knowledgebase", authenticateJWT, getArticles);
 router.get("/knowledgebase/:id", authenticateJWT, getArticleById);
 router.post(

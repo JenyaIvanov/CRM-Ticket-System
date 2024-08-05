@@ -17,7 +17,7 @@ const Navbar: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
   useEffect(() => {
-    console.log(location);
+    //console.log(location);
 
     // Retrieve JWT token from localStorage
     const TOKEN_KEY = process.env.REACT_APP_JWT;

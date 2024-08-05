@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import apiConfig from "../api/apiConfig";
 import { DecodedToken } from "../interfaces/DecodedToken";
+import { Categories } from "../interfaces/Categories";
 import JWT from "expo-jwt";
 
 const ArticleDetails: React.FC = () => {
@@ -14,6 +15,11 @@ const ArticleDetails: React.FC = () => {
   const [editMode, setEditMode] = useState<boolean>(false);
   const [title, setTitle] = useState<string>("");
   const [text, setText] = useState<string>("");
+  const [category, setCategory] = useState<string>("");
+  const [editCategoryId, setEditCategoryId] = useState<number>(0);
+  const [categoryName, setCategoryName] = useState<string>("");
+  const [categoryId, setCategoryId] = useState<number>(0);
+  const [categories, setCategories] = useState<Categories[]>([]);
   const [attachments, setAttachments] = useState<string[]>([]);
   const [createdBy, setCreatedBy] = useState("");
 
@@ -46,6 +52,19 @@ const ArticleDetails: React.FC = () => {
       navigate("/login");
     }
 
+    // Function handles fetching all the categories.
+    const fetchCategories = async () => {
+      if (!article) return;
+      try {
+        let url = "/knowledgebase/categories";
+
+        const response = await apiConfig.get(url);
+        setCategories(response.data);
+      } catch (error) {
+        console.error("Error fetching categories:", error);
+      }
+    };
+
     // Function handles fetching Article details and their Author name.
     const fetchArticleDetails = async () => {
       try {
@@ -54,7 +73,10 @@ const ArticleDetails: React.FC = () => {
         setTitle(response.data.title);
         setText(response.data.text);
         setAttachments(response.data.attachments || []);
-
+        setCategory(response.data.category);
+        setCategoryId(response.data.category_id);
+        setEditCategoryId(categoryId);
+        fetchCategories();
         fetchAuthorDetails();
       } catch (error) {
         console.error("Error fetching article:", error);
@@ -81,9 +103,10 @@ const ArticleDetails: React.FC = () => {
         title,
         text,
         attachments,
+        editCategoryId,
       });
       setArticle((prev: any) =>
-        prev ? { ...prev, title, text, attachments } : null
+        prev ? { ...prev, title, text, attachments, category } : null
       );
       setEditMode(false);
     } catch (error) {
@@ -149,7 +172,26 @@ const ArticleDetails: React.FC = () => {
                 value={text}
                 onChange={(e) => setText(e.target.value)}
               />
-
+              <p>Category</p>
+              <select
+                id="category-select"
+                value={editCategoryId}
+                onChange={(e) => {
+                  setEditCategoryId(
+                    Number(e.target.options[e.target.selectedIndex].value)
+                  );
+                  setCategory(e.target.options[e.target.selectedIndex].text);
+                }}
+              >
+                <option value="" disabled>
+                  Select a category
+                </option>
+                {categories.map((cat) => (
+                  <option key={cat.id} value={cat.id}>
+                    {cat.title}
+                  </option>
+                ))}
+              </select>
               <button onClick={handleEdit}>Save</button>
               <button onClick={() => setEditMode(false)}>Cancel</button>
             </div>
@@ -163,6 +205,8 @@ const ArticleDetails: React.FC = () => {
                 Date Created: {new Date(article.date_created).toLocaleString()}
               </p>
               <p>Author: {createdBy}</p>
+
+              <p>Category: {category}</p>
 
               {/* Article: Body (Description) Section */}
               <p>{article.text}</p>
