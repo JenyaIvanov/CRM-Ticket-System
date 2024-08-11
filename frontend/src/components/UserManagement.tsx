@@ -153,287 +153,290 @@ const UserManagement: React.FC = () => {
   };
 
   return (
-    <div className="flex">
-      <div className="bg-gradient-to-br from-slate-100 to-neutral-100 w-[90%] shadow-lg border p-12 rounded-xl mt-2 ms-1">
-        {/* User Management View */}
-        <h1 className="text-2xl  font-poppins text-slate-700 drop-shadow-sm">
-          User Management
-        </h1>
-        <p className="text-slate-500">Select any user to edit their details.</p>
-        <p className="mb-5 text-slate-500">
+    <div className="flex flex-col ms-5">
+      {/* Articles */}
+      <h1 className="text-slate-600 text-2xl font-poppins font-bold mb-3 mt-5">
+        User Management
+      </h1>
+      <div className="mt-1 mb-4 w-11/12 font-thin text-slate-500">
+        <p className=" mb-1">
+          View and manage all users in the system. Administrators can edit
+          profiles, update user information, and review the tickets each user
+          has opened.
+        </p>
+        <p>
           Click on the column headers below to sort the list in either ascending
           or descending order.
         </p>
+      </div>
+      {/* Users List */}
+      <div className="sticky z-10 top-0 grid grid-cols-5 p-3 font-poppins rounded-lg bg-gradient-to-br from-rose-500 to-80% to-cyan-600 text-white w-11/12 items-center border shadow mb-2">
+        <p>Profile Image</p>
+        <p
+          className={
+            usersFilter === "role"
+              ? "flex flex-row items-center gap-1 hover:cursor-pointer font-bold transition duration-300 ms-2"
+              : "flex flex-row items-center gap-1 hover:cursor-pointer ms-2"
+          }
+          onClick={() => handleFilterChange("role")}
+        >
+          Role
+          {usersFilter === "role" && orderFilter === "DESC" ? (
+            <RiArrowDownSFill className="text-2xl" />
+          ) : (
+            ""
+          )}
+          {usersFilter === "role" && orderFilter === "ASC" ? (
+            <RiArrowUpSFill className="text-2xl" />
+          ) : (
+            ""
+          )}
+        </p>
+        <p
+          className={
+            usersFilter === "username"
+              ? "flex flex-row items-center gap-1 hover:cursor-pointer font-bold transition duration-300"
+              : "flex flex-row items-center gap-1 hover:cursor-pointer"
+          }
+          onClick={() => handleFilterChange("username")}
+        >
+          Username
+          {usersFilter === "username" && orderFilter === "DESC" ? (
+            <RiArrowDownSFill className="text-2xl" />
+          ) : (
+            ""
+          )}
+          {usersFilter === "username" && orderFilter === "ASC" ? (
+            <RiArrowUpSFill className="text-2xl" />
+          ) : (
+            ""
+          )}
+        </p>
+        <p
+          className={
+            usersFilter === "email"
+              ? "flex flex-row items-center gap-1 hover:cursor-pointer font-bold transition duration-300"
+              : "flex flex-row items-center gap-1 hover:cursor-pointer"
+          }
+          onClick={() => handleFilterChange("email")}
+        >
+          Email
+          {usersFilter === "email" && orderFilter === "DESC" ? (
+            <RiArrowDownSFill className="text-2xl" />
+          ) : (
+            ""
+          )}
+          {usersFilter === "email" && orderFilter === "ASC" ? (
+            <RiArrowUpSFill className="text-2xl" />
+          ) : (
+            ""
+          )}
+        </p>
+        <p
+          className={
+            usersFilter === "tickets_count"
+              ? "flex flex-row items-center gap-1 hover:cursor-pointer font-bold transition duration-300"
+              : "flex flex-row items-center gap-1 hover:cursor-pointer"
+          }
+          onClick={() => handleFilterChange("tickets_count")}
+        >
+          Tickets
+          {usersFilter === "tickets_count" && orderFilter === "DESC" ? (
+            <RiArrowDownSFill className="text-2xl" />
+          ) : (
+            ""
+          )}
+          {usersFilter === "tickets_count" && orderFilter === "ASC" ? (
+            <RiArrowUpSFill className="text-2xl" />
+          ) : (
+            ""
+          )}
+        </p>
+      </div>
+      {users.map((user) => (
+        <div
+          key={user.id}
+          className="w-11/12 hover:cursor-pointer px-[0.6rem] py-[0.2rem] grid grid-cols-5 items-center font-poppins border rounded-xl mb-1 bg-neutral-50 shadow hover:bg-neutral-200 hover:scale-[102%] transition duration-300"
+          onClick={() => openModal(user.id)}
+        >
+          {/* User */}
 
-        {/* Users List */}
-        <div className="font-thin text-slate-600 text-lg grid grid-cols-5 border rounded-xl p-4 bg-slate-200 shadow mb-1">
-          <p>Profile Image</p>
-          <p
-            className={
-              usersFilter === "role"
-                ? "flex flex-row items-center gap-1 hover:cursor-pointer font-bold transition duration-300"
-                : "flex flex-row items-center gap-1 hover:cursor-pointer"
-            }
-            onClick={() => handleFilterChange("role")}
-          >
-            Role
-            {usersFilter === "role" && orderFilter === "DESC" ? (
-              <RiArrowDownSFill className="text-2xl" />
-            ) : (
-              ""
-            )}
-            {usersFilter === "role" && orderFilter === "ASC" ? (
-              <RiArrowUpSFill className="text-2xl" />
-            ) : (
-              ""
-            )}
-          </p>
-          <p
-            className={
-              usersFilter === "username"
-                ? "flex flex-row items-center gap-1 hover:cursor-pointer font-bold transition duration-300"
-                : "flex flex-row items-center gap-1 hover:cursor-pointer"
-            }
-            onClick={() => handleFilterChange("username")}
-          >
-            Username
-            {usersFilter === "username" && orderFilter === "DESC" ? (
-              <RiArrowDownSFill className="text-2xl" />
-            ) : (
-              ""
-            )}
-            {usersFilter === "username" && orderFilter === "ASC" ? (
-              <RiArrowUpSFill className="text-2xl" />
-            ) : (
-              ""
-            )}
-          </p>
-          <p
-            className={
-              usersFilter === "email"
-                ? "flex flex-row items-center gap-1 hover:cursor-pointer font-bold transition duration-300"
-                : "flex flex-row items-center gap-1 hover:cursor-pointer"
-            }
-            onClick={() => handleFilterChange("email")}
-          >
-            Email
-            {usersFilter === "email" && orderFilter === "DESC" ? (
-              <RiArrowDownSFill className="text-2xl" />
-            ) : (
-              ""
-            )}
-            {usersFilter === "email" && orderFilter === "ASC" ? (
-              <RiArrowUpSFill className="text-2xl" />
-            ) : (
-              ""
-            )}
-          </p>
-          <p
-            className={
-              usersFilter === "tickets_count"
-                ? "flex flex-row items-center gap-1 hover:cursor-pointer font-bold transition duration-300"
-                : "flex flex-row items-center gap-1 hover:cursor-pointer"
-            }
-            onClick={() => handleFilterChange("tickets_count")}
-          >
-            Tickets
-            {usersFilter === "tickets_count" && orderFilter === "DESC" ? (
-              <RiArrowDownSFill className="text-2xl" />
-            ) : (
-              ""
-            )}
-            {usersFilter === "tickets_count" && orderFilter === "ASC" ? (
-              <RiArrowUpSFill className="text-2xl" />
-            ) : (
-              ""
-            )}
-          </p>
-        </div>
-        {users.map((user) => (
+          <img
+            src={"http://localhost:3000/" + user.profile_picture}
+            alt="Profile"
+            className=" object-contain rounded-full"
+            width="50"
+            height="50"
+          />
+
           <div
-            key={user.id}
-            className="grid grid-cols-5 items-center font-poppins border rounded-xl p-2 bg-neutral-50 hover:scale-105 hover:bg-slate-400 transition duration-300 mb-1 shadow-sm"
-            onClick={() => openModal(user.id)}
+            className={
+              user.role === "admin"
+                ? "text-white bg-gradient-to-br from-rose-500 to-cyan-400 w-fit px-[0.6rem] py-[0.4rem] rounded-md shadow-sm"
+                : "text-white bg-gradient-to-br from-teal-500 to-emerald-400 w-fit px-[1rem] py-[0.4rem] rounded-md shadow-sm"
+            }
           >
-            {/* User */}
+            {user.role}
+          </div>
 
-            <img
-              src={"http://localhost:3000/" + user.profile_picture}
-              alt="Profile"
-              className=" object-contain rounded-full"
-              width="50"
-              height="50"
-            />
+          <div>{user.username}</div>
 
-            <div
-              className={
-                user.role === "admin"
-                  ? "text-white bg-gradient-to-br from-rose-500 to-cyan-400 w-fit px-[0.6rem] py-[0.4rem] rounded-md shadow-sm"
-                  : "text-white bg-gradient-to-br from-teal-500 to-emerald-400 w-fit px-[1rem] py-[0.4rem] rounded-md shadow-sm"
-              }
-            >
-              {user.role}
-            </div>
+          <div>{user.email}</div>
 
-            <div>{user.username}</div>
+          <div>{user.tickets_count}</div>
 
-            <div>{user.email}</div>
-
-            <div>{user.tickets_count}</div>
-
-            {/* <button
+          {/* <button
               className="bg-gradient-to-b from-gray-800 to-gray-600 text-white px-[0.8rem] py-[0.2rem] rounded-xl"
               onClick={() => openModal(user.id)}
             >
               {" "}
               Details
             </button> */}
-          </div>
-        ))}
+        </div>
+      ))}
 
-        {/* User Edit Modal */}
-        {selectedUser && (
-          <Modal
-            isOpen={modalIsOpen}
-            ariaHideApp={false}
-            onRequestClose={closeModal}
-          >
-            <div className="flex justify-center flex-col items-center">
-              <h2 className="font-poppins text-2xl mb-1">User Details</h2>
+      {/* User Edit Modal */}
+      {selectedUser && (
+        <Modal
+          isOpen={modalIsOpen}
+          ariaHideApp={false}
+          onRequestClose={closeModal}
+        >
+          <div className="flex justify-center flex-col items-center">
+            <h2 className="font-poppins text-2xl mb-1">User Details</h2>
 
-              {/* User: Profile Pictrue */}
-              <p className="font-thin text-sm">Profile Picture</p>
-              <img
-                src={"http://localhost:3000/" + selectedUser.profile_picture}
-                alt="Profile"
-                width="100"
-                height="100"
-                className="rounded-full shadow m-2"
-              />
-              <button
-                className="px-3 py-2 rounded-lg bg-slate-500 text-white hover:scale-105 transition duration-300"
-                onClick={handleResetProfilePicture}
-              >
-                Reset Picture To Default
-              </button>
+            {/* User: Profile Pictrue */}
+            <p className="font-thin text-sm">Profile Picture</p>
+            <img
+              src={"http://localhost:3000/" + selectedUser.profile_picture}
+              alt="Profile"
+              width="100"
+              height="100"
+              className="rounded-full shadow m-2"
+            />
+            <button
+              className="px-3 py-2 rounded-lg bg-slate-500 text-white hover:scale-105 transition duration-300"
+              onClick={handleResetProfilePicture}
+            >
+              Reset Picture To Default
+            </button>
 
-              <div className="grid-rows-3 m-2 p-2">
-                {/* User: Profile Details */}
-                <div className="flex flex-row items-center gap-2">
-                  <FaRegUser className="text-xl" />
-                  <p className="border p-2 rounded-xl mb-1 w-auto">
-                    Username: {selectedUser.username}
-                  </p>
-                </div>
-                <div className="flex flex-row items-center gap-2">
-                  <MdOutlineMail className="text-xl" />
-                  <p className="border p-2 rounded-xl mb-1">
-                    Email: {selectedUser.email}
-                  </p>
-                </div>
-
-                <div className="flex flex-row items-center gap-2 mb-1">
-                  <SiAuth0 className="text-xl" />
-                  {/* User: Change Role */}
-                  <p className="border p-2 rounded-xl">
-                    Role:
-                    <select value={newRole} onChange={handleRoleChange}>
-                      <option value="user">User</option>
-                      <option value="admin">Admin</option>
-                    </select>
-                  </p>
-                </div>
-
-                <div className="flex flex-row items-center gap-2">
-                  <TiTicket className="text-xl" />
-                  <p className="border p-2 rounded-xl mb-1">
-                    Tickets Crteated: {selectedUser.tickets_count}
-                  </p>
-                </div>
+            <div className="grid-rows-3 m-2 p-2">
+              {/* User: Profile Details */}
+              <div className="flex flex-row items-center gap-2">
+                <FaRegUser className="text-xl" />
+                <p className="border p-2 rounded-xl mb-1 w-auto">
+                  Username: {selectedUser.username}
+                </p>
+              </div>
+              <div className="flex flex-row items-center gap-2">
+                <MdOutlineMail className="text-xl" />
+                <p className="border p-2 rounded-xl mb-1">
+                  Email: {selectedUser.email}
+                </p>
               </div>
 
-              <div className="flex flex-row gap-2">
-                {/* User: Submit Changes Role */}
-                <button
-                  className="text-white font-poppins px-[1rem] py-[0.4rem] shadow border hover:scale-105 rounded-lg bg-gradient-to-r from-emerald-500 to-lime-600 transition duration-300"
-                  onClick={handleUpdateProfile}
-                >
-                  Update
-                </button>
-                <button
-                  className="text-white font-poppins px-[1rem] py-[0.4rem] shadow border hover:scale-105 rounded-lg bg-gradient-to-r from-rose-400 to-red-500 transition duration-300"
-                  onClick={closeModal}
-                >
-                  Close
-                </button>
+              <div className="flex flex-row items-center gap-2 mb-1">
+                <SiAuth0 className="text-xl" />
+                {/* User: Change Role */}
+                <p className="border p-2 rounded-xl">
+                  Role:
+                  <select value={newRole} onChange={handleRoleChange}>
+                    <option value="user">User</option>
+                    <option value="admin">Admin</option>
+                  </select>
+                </p>
+              </div>
+
+              <div className="flex flex-row items-center gap-2">
+                <TiTicket className="text-xl" />
+                <p className="border p-2 rounded-xl mb-1">
+                  Tickets Crteated: {selectedUser.tickets_count}
+                </p>
               </div>
             </div>
 
-            {/* User: Tickets View */}
-            <p className="font-thin text-xl mt-4 mb-2">
-              Tickets created by {selectedUser.username}:
-            </p>
             <div className="flex flex-row gap-2">
-              {selectedUserTickets && (
-                <>
-                  {selectedUserTickets.map((ticket) => (
-                    <div
-                      className="px-6 py-3 flex flex-col transition duration-500 hover:scale-105 hover:cursor-pointer rounded-xl w-[17rem] bg-gradient-to-br text-white border shadow from-gray-700 to-cyan-600"
-                      onClick={() => handleTicketClick(ticket.id)}
-                      key={ticket.id}
-                    >
-                      <div className="flex flex-row items-center gap-2 mb-1 justify-between">
-                        <p className=" font-poppins text-lg font-bold">
-                          {ticket.title}
-                        </p>
-                        <div className="w-fit">
-                          {ticket.priority === "Urgent" ? (
-                            <p className="px-[0.65rem] py-[0.3rem] rounded-xl text-sm text-white bg-gradient-to-r from-red-500 to-orange-500">
-                              Urgent
-                            </p>
-                          ) : (
-                            ""
-                          )}
-                          {ticket.priority === "High" ? (
-                            <p className="px-[0.65rem] py-[0.25rem] rounded-xl text-sm text-white bg-gradient-to-r from-indigo-500 to-blue-500">
-                              High
-                            </p>
-                          ) : (
-                            ""
-                          )}
-                          {ticket.priority === "Medium" ? (
-                            <p className="px-[0.65rem] py-[0.25rem] rounded-xl text-sm text-white bg-gradient-to-r from-fuchsia-600 to-purple-600">
-                              Medium
-                            </p>
-                          ) : (
-                            ""
-                          )}
-                          {ticket.priority === "Low" ? (
-                            <p className="px-[0.65rem] py-[0.25rem] rounded-xl text-sm text-white bg-gradient-to-r from-emerald-500 to-lime-600">
-                              Low
-                            </p>
-                          ) : (
-                            ""
-                          )}
-                        </div>
-                      </div>
-                      <p className="font-thin text-sm my-1">
-                        Date Created:{" "}
-                        {new Date(ticket.date_created).toLocaleDateString()}
+              {/* User: Submit Changes Role */}
+              <button
+                className="text-white font-poppins px-[1rem] py-[0.4rem] shadow border hover:scale-105 rounded-lg bg-gradient-to-r from-emerald-500 to-lime-600 transition duration-300"
+                onClick={handleUpdateProfile}
+              >
+                Update
+              </button>
+              <button
+                className="text-white font-poppins px-[1rem] py-[0.4rem] shadow border hover:scale-105 rounded-lg bg-gradient-to-r from-rose-400 to-red-500 transition duration-300"
+                onClick={closeModal}
+              >
+                Close
+              </button>
+            </div>
+          </div>
+
+          {/* User: Tickets View */}
+          <p className="font-thin text-xl mt-4 mb-2">
+            Tickets created by {selectedUser.username}:
+          </p>
+          <div className="flex flex-row gap-2">
+            {selectedUserTickets && (
+              <>
+                {selectedUserTickets.map((ticket) => (
+                  <div
+                    className="px-6 py-3 flex flex-col transition duration-500 hover:scale-105 hover:cursor-pointer rounded-xl w-[17rem] bg-gradient-to-br text-white border shadow from-gray-700 to-cyan-600"
+                    onClick={() => handleTicketClick(ticket.id)}
+                    key={ticket.id}
+                  >
+                    <div className="flex flex-row items-center gap-2 mb-1 justify-between">
+                      <p className=" font-poppins text-lg font-bold">
+                        {ticket.title}
                       </p>
-                      <p className="font-poppins">Status: {ticket.status}</p>
-                      <div className="flex justify-end items-center gap-1">
-                        <FaComments />
-                        <p className="font-thin">{ticket.comments_count}</p>
+                      <div className="w-fit">
+                        {ticket.priority === "Urgent" ? (
+                          <p className="px-[0.65rem] py-[0.3rem] rounded-xl text-sm text-white bg-gradient-to-r from-red-500 to-orange-500">
+                            Urgent
+                          </p>
+                        ) : (
+                          ""
+                        )}
+                        {ticket.priority === "High" ? (
+                          <p className="px-[0.65rem] py-[0.25rem] rounded-xl text-sm text-white bg-gradient-to-r from-indigo-500 to-blue-500">
+                            High
+                          </p>
+                        ) : (
+                          ""
+                        )}
+                        {ticket.priority === "Medium" ? (
+                          <p className="px-[0.65rem] py-[0.25rem] rounded-xl text-sm text-white bg-gradient-to-r from-fuchsia-600 to-purple-600">
+                            Medium
+                          </p>
+                        ) : (
+                          ""
+                        )}
+                        {ticket.priority === "Low" ? (
+                          <p className="px-[0.65rem] py-[0.25rem] rounded-xl text-sm text-white bg-gradient-to-r from-emerald-500 to-lime-600">
+                            Low
+                          </p>
+                        ) : (
+                          ""
+                        )}
                       </div>
                     </div>
-                  ))}
-                </>
-              )}
-            </div>
-          </Modal>
-        )}
-      </div>
+                    <p className="font-thin text-sm my-1">
+                      Date Created:{" "}
+                      {new Date(ticket.date_created).toLocaleDateString()}
+                    </p>
+                    <p className="font-poppins">Status: {ticket.status}</p>
+                    <div className="flex justify-end items-center gap-1">
+                      <FaComments />
+                      <p className="font-thin">{ticket.comments_count}</p>
+                    </div>
+                  </div>
+                ))}
+              </>
+            )}
+          </div>
+        </Modal>
+      )}
     </div>
   );
 };

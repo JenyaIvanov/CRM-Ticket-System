@@ -79,7 +79,7 @@ const Tickets: React.FC = () => {
   };
 
   const handleCreateTicket = () => {
-    navigate("/create-ticket");
+    navigate("/tickets/create-ticket");
   };
 
   return (

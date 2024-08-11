@@ -47,7 +47,7 @@ const MainLayout: React.FC = () => {
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/tickets" element={<Tickets />} />
           <Route path="/tickets/:ticketId" element={<TicketDetails />} />
-          <Route path="/create-ticket/" element={<CreateTicket />} />
+          <Route path="/tickets/create-ticket/" element={<CreateTicket />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/knowledgebase/" element={<KnowledgeBase />} />
           <Route path="/user-management/" element={<UserManagement />} />

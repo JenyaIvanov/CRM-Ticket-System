@@ -138,10 +138,10 @@ const KnowledgeBase: React.FC = () => {
       </div>
 
       {/* Search */}
-      <div className="w-11/12">
+      <div className="w-11/12 sticky z-10 top-[-1rem]">
         {/* Search Box */}
         <input
-          className="w-full h-fit bg-slate-200 p-2 focus:border-2 focus:outline-none focus:border-teal-600 shadow text-slate-600 rounded-xl my-5 placeholder-slate-600"
+          className="w-full h-fit bg-slate-200 p-2 focus:border-2 focus:outline-none focus:border-emerald-400 shadow text-slate-600 rounded-xl my-5 placeholder-slate-600"
           type="text"
           placeholder="Search the knowledgebase..."
           value={searchQuery}
@@ -149,7 +149,7 @@ const KnowledgeBase: React.FC = () => {
         />
       </div>
 
-      <div className="grid grid-cols-4 p-3 font-poppins rounded-lg bg-gradient-to-br from-emerald-500 to-teal-600 text-white w-11/12 items-center border shadow mb-2">
+      <div className="sticky z-10 top-[3rem] grid grid-cols-4 p-3 font-poppins rounded-lg bg-gradient-to-br from-emerald-500 to-teal-600 text-white w-11/12 items-center border shadow mb-2">
         <p
           className={
             articlesFilter === "title"
