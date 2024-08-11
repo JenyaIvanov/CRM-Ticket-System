@@ -154,7 +154,7 @@ const UserManagement: React.FC = () => {
 
   return (
     <div className="flex flex-col ms-5">
-      {/* Articles */}
+      {/* User Management */}
       <h1 className="text-slate-600 text-2xl font-poppins font-bold mb-3 mt-5">
         User Management
       </h1>
@@ -170,7 +170,13 @@ const UserManagement: React.FC = () => {
         </p>
       </div>
       {/* Users List */}
-      <div className="sticky z-10 top-0 grid grid-cols-5 p-3 font-poppins rounded-lg bg-gradient-to-br from-rose-500 to-80% to-cyan-600 text-white w-11/12 items-center border shadow mb-2">
+      <div
+        className={
+          modalIsOpen === true
+            ? "z-0 top-0 grid grid-cols-5 p-3 font-poppins rounded-lg bg-gradient-to-br from-rose-500 to-80% to-cyan-600 text-white w-11/12 items-center border shadow mb-2"
+            : "sticky z-10 top-0 grid grid-cols-5 p-3 font-poppins rounded-lg bg-gradient-to-br from-rose-500 to-80% to-cyan-600 text-white w-11/12 items-center border shadow mb-2"
+        }
+      >
         <p>Profile Image</p>
         <p
           className={
@@ -302,7 +308,7 @@ const UserManagement: React.FC = () => {
           ariaHideApp={false}
           onRequestClose={closeModal}
         >
-          <div className="flex justify-center flex-col items-center">
+          <div className="z-20 flex justify-center flex-col items-center">
             <h2 className="font-poppins text-2xl mb-1">User Details</h2>
 
             {/* User: Profile Pictrue */}
@@ -374,12 +380,12 @@ const UserManagement: React.FC = () => {
           </div>
 
           {/* User: Tickets View */}
-          <p className="font-thin text-xl mt-4 mb-2">
-            Tickets created by {selectedUser.username}:
-          </p>
-          <div className="flex flex-row gap-2">
-            {selectedUserTickets && (
-              <>
+          {selectedUserTickets && (
+            <>
+              <p className="font-thin text-xl mt-4 mb-2">
+                Tickets created by {selectedUser.username}:
+              </p>
+              <div className="flex flex-row gap-2">
                 {selectedUserTickets.map((ticket) => (
                   <div
                     className="px-6 py-3 flex flex-col transition duration-500 hover:scale-105 hover:cursor-pointer rounded-xl w-[17rem] bg-gradient-to-br text-white border shadow from-gray-700 to-cyan-600"
@@ -432,9 +438,9 @@ const UserManagement: React.FC = () => {
                     </div>
                   </div>
                 ))}
-              </>
-            )}
-          </div>
+              </div>
+            </>
+          )}
         </Modal>
       )}
     </div>

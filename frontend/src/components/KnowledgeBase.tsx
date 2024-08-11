@@ -120,14 +120,14 @@ const KnowledgeBase: React.FC = () => {
       </div>
 
       <div className="flex flex-row justify-between items-center w-11/12">
-        <div className="text-white font-thin flex flex-row items-center gap-2 px-[0.7rem] py-[0.5rem] bg-gradient-to-br from-emerald-500 to-teal-400  rounded-md shadow w-fit">
+        <div className="text-white font-thin flex flex-row items-center gap-2 px-[0.7rem] py-[0.5rem] bg-gradient-to-br from-emerald-500 to-teal-400 rounded-md shadow w-fit hover:shadow-lg hover:scale-[104%] transition duration-100">
           {/* Create A New Article */}
           <FaPlusCircle className="text-xl" />
           <button onClick={handleCreateArticle}>Create New Article</button>
         </div>
 
         {userRole === "admin" ? (
-          <div className="text-white font-thin flex flex-row items-center gap-2 px-[0.7rem] py-[0.5rem] bg-gradient-to-br from-rose-500 to-cyan-400  rounded-md shadow w-fit">
+          <div className="text-white font-thin flex flex-row items-center gap-2 px-[0.7rem] py-[0.5rem] bg-gradient-to-br from-rose-500 to-cyan-400 rounded-md shadow w-fit hover:shadow-lg hover:scale-[104%] transition duration-100">
             {/* Edit Categories */}
             <MdOutlineCategory className="text-xl" />
             <button onClick={handleEditCategories}>Edit Categories</button>
