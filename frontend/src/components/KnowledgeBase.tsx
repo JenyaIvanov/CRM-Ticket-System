@@ -120,14 +120,14 @@ const KnowledgeBase: React.FC = () => {
       </div>
 
       <div className="flex flex-row justify-between items-center w-11/12">
-        <div className="text-white font-thin flex flex-row items-center gap-2 px-[0.7rem] py-[0.5rem] bg-gradient-to-br from-emerald-500 to-teal-400 rounded-md shadow w-fit hover:shadow-lg hover:scale-[104%] transition duration-100">
+        <div className="text-white text-lg font-thin flex flex-row items-center gap-2 px-[0.7rem] py-[0.5rem] bg-gradient-to-br from-emerald-500 to-teal-400 rounded-md shadow w-fit hover:shadow-lg hover:scale-[104%] transition duration-100">
           {/* Create A New Article */}
           <FaPlusCircle className="text-xl" />
           <button onClick={handleCreateArticle}>Create New Article</button>
         </div>
 
         {userRole === "admin" ? (
-          <div className="text-white font-thin flex flex-row items-center gap-2 px-[0.7rem] py-[0.5rem] bg-gradient-to-br from-rose-500 to-cyan-400 rounded-md shadow w-fit hover:shadow-lg hover:scale-[104%] transition duration-100">
+          <div className="text-white text-lg font-thin flex flex-row items-center gap-2 px-[0.7rem] py-[0.5rem] bg-gradient-to-br from-rose-500 to-cyan-400 rounded-md shadow w-fit hover:shadow-lg hover:scale-[104%] transition duration-100">
             {/* Edit Categories */}
             <MdOutlineCategory className="text-xl" />
             <button onClick={handleEditCategories}>Edit Categories</button>
@@ -149,7 +149,7 @@ const KnowledgeBase: React.FC = () => {
         />
       </div>
 
-      <div className="sticky z-10 top-[3rem] grid grid-cols-4 p-3 font-poppins rounded-lg bg-gradient-to-br from-emerald-500 to-teal-600 text-white w-11/12 items-center border shadow mb-2">
+      <div className="sticky z-10 top-[3rem] grid grid-cols-5 p-3 font-poppins rounded-lg bg-gradient-to-br from-emerald-500 to-teal-600 text-white w-11/12 items-center border shadow mb-2">
         <p
           className={
             articlesFilter === "title"
@@ -170,6 +170,7 @@ const KnowledgeBase: React.FC = () => {
             ""
           )}
         </p>
+        <p>Description</p>
         <p>Author</p>
         <p
           className={
@@ -217,7 +218,7 @@ const KnowledgeBase: React.FC = () => {
       <div className="w-11/12">
         {articles.map((article) => (
           <div
-            className="grid grid-cols-4 font-thin px-[0.4rem] py-[0.6rem] rounded-lg mb-[0.35rem] bg-white w-full items-center border shadow hover:cursor-pointer hover:bg-neutral-200 hover:scale-[103%] transition duration-300"
+            className="grid grid-cols-5 font-thin px-[0.4rem] py-[0.6rem] rounded-lg mb-[0.35rem] bg-white w-full items-center border shadow hover:cursor-pointer hover:bg-neutral-200 hover:scale-[103%] transition duration-300"
             key={article.article_id}
             onClick={() => handleArticleClick(article.article_id ?? 0)} // Provide a default value of 0 or handle undefined cases
           >
@@ -225,6 +226,9 @@ const KnowledgeBase: React.FC = () => {
               <MdOutlineArticle className="text-xl text-teal-500" />
               <p>{article.title}</p>
             </div>
+            <p className="font-thin text-sm">
+              {article.text.substring(0, 40) + "..."}
+            </p>
             <p>{users[article.author_id]}</p>
             <p>{article.category}</p>
             <p>

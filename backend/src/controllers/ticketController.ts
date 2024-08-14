@@ -14,9 +14,15 @@ const connection = mysql.createConnection({
   database: "crm_ticket_system",
 });
 
+// Gets all the tickets in the system. [Params: Status and Search string]
 export const getTickets = (req: Request, res: Response) => {
   const { status, search } = req.query;
-  let query = "SELECT * FROM Tickets";
+  let query = `
+    SELECT 
+      Tickets.*, 
+      (SELECT COUNT(*) FROM Comments WHERE Comments.ticket_id = Tickets.id) AS comments_count 
+    FROM Tickets
+  `;
   let params: any[] = [];
 
   if (search) {
@@ -27,8 +33,12 @@ export const getTickets = (req: Request, res: Response) => {
     params.push(status);
   }
 
-  query +=
-    " ORDER BY FIELD(status, 'Open', 'In Progress', 'Resolved', 'Closed'), FIELD(priority, 'Urgent', 'High', 'Medium', 'Low'), date_created ASC";
+  query += `
+    ORDER BY 
+      FIELD(status, 'Open', 'In Progress', 'Resolved', 'Closed'), 
+      FIELD(priority, 'Urgent', 'High', 'Medium', 'Low'), 
+      date_created ASC
+  `;
 
   connection.query(query, params, (err, results: mysql.RowDataPacket[]) => {
     if (err) {

@@ -255,7 +255,7 @@ const ArticleDetails: React.FC = () => {
                   <MdFormatQuote className="text-xl mx-1 hover:cursor-pointer" />
                 </div>
                 <textarea
-                  className="border p-2 min-h-[55vh] border-emerald-400 shadow rounded-b-lg w-full h-full focus:outline-emerald-400"
+                  className="border p-2 min-h-[50vh] border-emerald-400 shadow rounded-b-lg w-full h-full focus:outline-emerald-400"
                   value={text}
                   onChange={(e) => setText(e.target.value)}
                 />
