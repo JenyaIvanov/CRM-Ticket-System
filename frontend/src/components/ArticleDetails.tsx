@@ -172,17 +172,9 @@ const ArticleDetails: React.FC = () => {
 
   return (
     <div className="flex flex-col ms-5">
-      <div className="mt-4 mb-6 text-white font-thin flex flex-row items-center gap-2 px-[0.7rem] py-[0.5rem] bg-gradient-to-br from-emerald-500 to-teal-400 rounded-md shadow w-fit hover:shadow-lg hover:scale-[104%] transition duration-100">
-        {/* Create A New Article */}
-        <MdOutlineKeyboardReturn className="text-xl" />
-        <button onClick={() => navigate("/knowledgebase")}>
-          Return To Knowledgebase
-        </button>
-      </div>
-
       {/* Article */}
       {article ? (
-        <div>
+        <div className="mt-3">
           {/* Article Edit Mode View */}
           {editMode &&
           (userRole === "admin" || userID === article.author_id) ? (
@@ -308,10 +300,10 @@ const ArticleDetails: React.FC = () => {
                     {/* Article: Edit */}
                     {userRole === "admin" || userID === article.author_id ? (
                       <button
-                        className="flex flex-row text-white text-lg items-center gap-1 px-[0.5rem] py-[0.3rem]  font-thin bg-gradient-to-br from-teal-400 to-emerald-500 rounded-xl shadow hover:scale-[104%] transition duration-150"
+                        className="text-white text-lg border items-center gap-1 flex flex-row shadow-sm px-[0.6rem] py-[0.3rem] bg-gradient-to-br from-teal-400 to-cyan-600 hover:scale-105 transition duration-150 rounded-lg"
                         onClick={() => setEditMode(true)}
                       >
-                        <MdCreate className="text-lg" />
+                        <MdCreate />
                         Edit Article
                       </button>
                     ) : (
@@ -322,7 +314,7 @@ const ArticleDetails: React.FC = () => {
                     {userRole === "admin" && (
                       <div>
                         <button
-                          className="flex flex-row text-lg text-white items-center gap-1 px-[0.5rem] py-[0.3rem]  font-thin bg-gradient-to-br from-cyan-500 to-cyan-700 rounded-xl shadow hover:scale-[104%] transition duration-150"
+                          className="text-white text-lg border items-center gap-1 flex flex-row shadow-sm px-[0.6rem] py-[0.3rem] bg-gradient-to-br from-rose-400 to-rose-600 hover:scale-105 transition duration-150 rounded-lg"
                           onClick={handleDelete}
                         >
                           <MdDeleteForever className="text-lg" />

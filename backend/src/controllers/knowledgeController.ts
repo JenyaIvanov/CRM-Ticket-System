@@ -34,6 +34,7 @@ export const getArticles = (req: Request, res: Response) => {
 
   // Validate the field and order
   //console.log("F:" + field + ". O: " + order);
+
   const validFields = ["title", "category", "date_created"];
   const validOrder = ["ASC", "DESC"];
 
