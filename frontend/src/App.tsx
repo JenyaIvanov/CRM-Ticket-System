@@ -16,6 +16,10 @@ import CreateTicket from "./components/CreateTicket";
 import Profile from "./components/Profile";
 import Navbar from "./components/Navbar";
 import UserManagement from "./components/UserManagement";
+import KnowledgeBase from "./components/KnowledgeBase";
+import CreateArticle from "./components/CreateArticle";
+import ArticleDetails from "./components/ArticleDetails";
+import EditCategories from "./components/EditCategories";
 
 const App: React.FC = () => {
   return (
@@ -30,12 +34,11 @@ const MainLayout: React.FC = () => {
   const hideNavbar = ["/login", "/register"].includes(location.pathname);
 
   return (
-    <div style={{ display: "flex" }}>
+    <div className="">
       {!hideNavbar && <Navbar />}
       <div
         style={{
-          marginLeft: hideNavbar ? "0px" : "200px",
-          width: "100%",
+          marginLeft: hideNavbar ? "0px" : "205px",
         }}
       >
         <Routes>
@@ -44,9 +47,22 @@ const MainLayout: React.FC = () => {
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/tickets" element={<Tickets />} />
           <Route path="/tickets/:ticketId" element={<TicketDetails />} />
-          <Route path="/create-ticket" element={<CreateTicket />} />
+          <Route path="/tickets/create-ticket/" element={<CreateTicket />} />
           <Route path="/profile" element={<Profile />} />
+          <Route path="/knowledgebase/" element={<KnowledgeBase />} />
           <Route path="/user-management/" element={<UserManagement />} />
+          <Route
+            path="/knowledgebase/create-article/"
+            element={<CreateArticle />}
+          />
+          <Route
+            path="/knowledgebase/edit-categories/"
+            element={<EditCategories />}
+          />
+          <Route
+            path="/knowledgebase/:articleId"
+            element={<ArticleDetails />}
+          />
           <Route path="/" element={<Navigate to="/login" />} />
         </Routes>
       </div>

@@ -14,9 +14,15 @@ const connection = mysql.createConnection({
   database: "crm_ticket_system",
 });
 
+// Gets all the tickets in the system. [Params: Status and Search string]
 export const getTickets = (req: Request, res: Response) => {
   const { status, search } = req.query;
-  let query = "SELECT * FROM Tickets";
+  let query = `
+    SELECT 
+      Tickets.*, 
+      (SELECT COUNT(*) FROM Comments WHERE Comments.ticket_id = Tickets.id) AS comments_count 
+    FROM Tickets
+  `;
   let params: any[] = [];
 
   if (search) {
@@ -27,8 +33,12 @@ export const getTickets = (req: Request, res: Response) => {
     params.push(status);
   }
 
-  query +=
-    " ORDER BY FIELD(status, 'Open', 'In Progress', 'Resolved', 'Closed'), FIELD(priority, 'Urgent', 'High', 'Medium', 'Low'), date_created ASC";
+  query += `
+    ORDER BY 
+      FIELD(status, 'Open', 'In Progress', 'Resolved', 'Closed'), 
+      FIELD(priority, 'Urgent', 'High', 'Medium', 'Low'), 
+      date_created ASC
+  `;
 
   connection.query(query, params, (err, results: mysql.RowDataPacket[]) => {
     if (err) {
@@ -177,6 +187,29 @@ export const getTotalTicketsCount = (req: Request, res: Response) => {
 
 export const getTotalUrgentTicketsCount = (req: Request, res: Response) => {
   var sql = "SELECT COUNT(*) as count FROM Tickets WHERE priority = 'Urgent'";
+  connection.query(sql, (err, results: mysql.RowDataPacket[]) => {
+    if (err) {
+      return res.status(500).json({ error: err.message });
+    }
+    res.status(200).json({ results });
+  });
+};
+
+export const getTotalOpenedTickets = (req: Request, res: Response) => {
+  const sql = `
+    SELECT all_dates.date, COUNT(Tickets.id) as count
+    FROM (
+      SELECT CURDATE() - INTERVAL (a.a + (10 * b.a) + (100 * c.a)) DAY as date
+      FROM (SELECT 0 as a UNION ALL SELECT 1 UNION ALL SELECT 2 UNION ALL SELECT 3 UNION ALL SELECT 4 UNION ALL SELECT 5 UNION ALL SELECT 6 UNION ALL SELECT 7 UNION ALL SELECT 8 UNION ALL SELECT 9) as a
+      CROSS JOIN (SELECT 0 as a UNION ALL SELECT 1 UNION ALL SELECT 2 UNION ALL SELECT 3 UNION ALL SELECT 4 UNION ALL SELECT 5 UNION ALL SELECT 6 UNION ALL SELECT 7 UNION ALL SELECT 8 UNION ALL SELECT 9) as b
+      CROSS JOIN (SELECT 0 as a UNION ALL SELECT 1 UNION ALL SELECT 2 UNION ALL SELECT 3 UNION ALL SELECT 4 UNION ALL SELECT 5 UNION ALL SELECT 6 UNION ALL SELECT 7 UNION ALL SELECT 8 UNION ALL SELECT 9) as c
+    ) as all_dates
+    LEFT JOIN Tickets ON DATE(Tickets.date_created) = all_dates.date
+    WHERE all_dates.date >= CURDATE() - INTERVAL 10 DAY
+    GROUP BY all_dates.date
+    ORDER BY all_dates.date DESC;
+  `;
+
   connection.query(sql, (err, results: mysql.RowDataPacket[]) => {
     if (err) {
       return res.status(500).json({ error: err.message });
